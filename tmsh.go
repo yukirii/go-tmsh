@@ -49,24 +49,15 @@ func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 		return "", err
 	}
 
-	// Remove carriage return
-	removedResults := make([]byte, 0)
-	for _, c := range results {
-		if c != 13 {
-			removedResults = append(removedResults, c)
-		}
-	}
-
-	reader := bytes.NewReader(removedResults)
+	results = removeCarriageReturn(results)
+	reader := bytes.NewReader(results)
 	scanner := bufio.NewScanner(reader)
 
 	var lines []string
 
 	for scanner.Scan() {
 		text := scanner.Text()
-
-		// Remove space + back space
-		line := strings.Replace(text, " \b", "", -1)
+		line := removeSpaceAndBackspace(text)
 
 		if strings.HasPrefix(line, "Last login:") ||
 			strings.HasPrefix(line, promptPrefix) ||
