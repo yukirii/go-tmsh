@@ -16,4 +16,4 @@ import "github.com/shiftky/go-tmsh"
 
 ## Licence
 
-[MIT](https://github.com/shiftky/go-tmsh/LICENCE)
+[MIT](https://github.com/shiftky/go-tmsh/blob/master/LICENSE)
