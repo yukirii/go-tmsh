@@ -19,8 +19,8 @@ func (ki KeyboardInteractive) Challenge(user, instruction string, questions []st
 	return answers, nil
 }
 
-func NewSSHConnection(host, user, password string) (*SSHConn, error) {
-	session, err := newSSHSession(host, user, password)
+func NewSSHConnection(addr, user, password string) (*SSHConn, error) {
+	session, err := newSSHSession(addr, user, password)
 	if err != nil {
 		return nil, err
 	}
@@ -65,9 +65,7 @@ func NewSSHConnection(host, user, password string) (*SSHConn, error) {
 	}, nil
 }
 
-func newSSHSession(host, user, password string) (*ssh.Session, error) {
-	port := "22"
-
+func newSSHSession(addr, user, password string) (*ssh.Session, error) {
 	answers := KeyboardInteractive(map[string]string{
 		"Password: ": password,
 	})
@@ -83,7 +81,7 @@ func newSSHSession(host, user, password string) (*ssh.Session, error) {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	conn, err := ssh.Dial("tcp", host+":"+port, config)
+	conn, err := ssh.Dial("tcp", addr, config)
 	if err != nil {
 		return nil, err
 	}

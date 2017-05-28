@@ -22,8 +22,8 @@ type SSHConn struct {
 	stderr  io.Reader
 }
 
-func NewSession(host, user, password string) (*BigIP, error) {
-	sshconn, err := NewSSHConnection(host, user, password)
+func NewSession(host, port, user, password string) (*BigIP, error) {
+	sshconn, err := NewSSHConnection(host+":"+port, user, password)
 	if err != nil {
 		return nil, err
 	}
