@@ -60,7 +60,7 @@ func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 	reader := bytes.NewReader(removedResults)
 	scanner := bufio.NewScanner(reader)
 
-	returnStr := ""
+	var lines []string
 
 	for scanner.Scan() {
 		text := scanner.Text()
@@ -74,10 +74,10 @@ func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 			continue
 		}
 
-		returnStr += text + "\n"
+		lines = append(lines, text)
 	}
 
-	return returnStr, nil
+	return strings.Join(lines, "\n"), nil
 }
 
 func (bigip *BigIP) Close() {
