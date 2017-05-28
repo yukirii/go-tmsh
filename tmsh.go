@@ -80,6 +80,10 @@ func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 	return returnStr, nil
 }
 
-func (bigip *BigIP) Save() {
+func (bigip *BigIP) Close() {
 	bigip.sshconn.Close()
+}
+
+func (bigip *BigIP) Save() {
+	bigip.Close()
 }
