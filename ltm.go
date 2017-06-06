@@ -13,6 +13,27 @@ type Node struct {
 	EnabledState  string
 }
 
+type Pool struct {
+	ActiveMemberCount int
+	Name              string
+	MonitorRule       string
+	AvailabilityState string
+	EnabledState      string
+	StatusReason      string
+	PoolMembers       []PoolMember
+}
+
+type PoolMember struct {
+	Name              string
+	Addr              string
+	Port              int
+	MonitorRule       string
+	MonitorStatus     string
+	EnabledState      string
+	AvailabilityState string
+	StatusReason      string
+}
+
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	ret, _ := bigip.ExecuteCommand("show ltm node " + name + " field-fmt")
 	if strings.Contains(ret, "was not found.") {
