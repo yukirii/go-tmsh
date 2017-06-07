@@ -213,3 +213,33 @@ func TestParseShowLtmPool(t *testing.T) {
 		t.Errorf("\ngot %v\nwant %v", pool, expect)
 	}
 }
+
+func TestParseListLtmVirtual(t *testing.T) {
+	//# list ltm virtual api.example.com_80
+	str := `ltm virtual api.example.com_80 {
+    destination 203.0.113.1:http
+    ip-protocol tcp
+    mask 255.255.255.255
+    partition partition1
+    pool api.example.com_80
+    profiles {
+        /Common/tcp { }
+    }
+    source 0.0.0.0/0
+    vs-index 1234
+}`
+
+	vs := ParseListLtmVirtual(str)
+
+	expect := &VirtualServer{
+		Destination: "203.0.113.1:http",
+		IpProtocol:  "tcp",
+		Mask:        "255.255.255.255",
+		Partition:   "partition1",
+		Pool:        "api.example.com_80",
+	}
+
+	if !reflect.DeepEqual(vs, expect) {
+		t.Errorf("\ngot %v\nwant %v", vs, expect)
+	}
+}

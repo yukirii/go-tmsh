@@ -35,6 +35,14 @@ type PoolMember struct {
 	StatusReason      string
 }
 
+type VirtualServer struct {
+	Destination string
+	IpProtocol  string
+	Mask        string
+	Partition   string
+	Pool        string
+}
+
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	ret, _ := bigip.ExecuteCommand("show ltm node " + name + " field-fmt")
 	if strings.Contains(ret, "was not found.") {
@@ -142,6 +150,52 @@ func (bigip *BigIP) EnablePoolMember(poolName, nodeName string, port int) error 
 func (bigip *BigIP) DisablePoolMember(poolName, nodeName string, port int) error {
 	member := nodeName + ":" + strconv.Itoa(port)
 	cmd := "modify ltm pool " + poolName + " members modify { " + member + " { session user-disabled } }"
+	ret, _ := bigip.ExecuteCommand(cmd)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
+	ret, _ := bigip.ExecuteCommand("list ltm virtual " + name)
+	if strings.Contains(ret, "was not found.") {
+		return nil, fmt.Errorf(ret)
+	}
+	vs := ParseListLtmVirtual(ret)
+	return vs, nil
+
+}
+
+func (bigip *BigIP) CreateVirtualServer(vsName, poolName, targetVIP, defaultProfileName string, targetPort int) error {
+	destination := targetVIP + ":" + strconv.Itoa(targetPort)
+	cmd := "create ltm virtual " + vsName + " { destination " + destination + " ip-protocol tcp mask 255.255.255.255 pool " + poolName + " profiles add { " + defaultProfileName + " } }"
+	ret, _ := bigip.ExecuteCommand(cmd)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) DeleteVirtualServer(vsName string) error {
+	ret, _ := bigip.ExecuteCommand("delete ltm virtual " + vsName)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) AddVirtualServerProfile(vsName, profileName, context string) error {
+	cmd := "modify ltm virtual " + vsName + " profiles add { " + profileName + " { context " + context + " } }"
+	ret, _ := bigip.ExecuteCommand(cmd)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) DeleteVirtualServerProfile(vsName, profileName, context string) error {
+	cmd := "modify ltm virtual " + vsName + " profiles delete { " + profileName + " }"
 	ret, _ := bigip.ExecuteCommand(cmd)
 	if ret != "" {
 		return fmt.Errorf(ret)
