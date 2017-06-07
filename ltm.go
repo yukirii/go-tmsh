@@ -203,7 +203,7 @@ func (bigip *BigIP) DeleteVirtualServerProfile(vsName, profileName, context stri
 	return nil
 }
 
-func (bigip *BigIP) ApplyPolicyToVirtualServer(vsName, policyName) error {
+func (bigip *BigIP) ApplyPolicyToVirtualServer(vsName, policyName string) error {
 	cmd := "modify ltm virtual " + vsName + " fw-enforced-policy " + policyName
 	ret, _ := bigip.ExecuteCommand(cmd)
 	if ret != "" {
