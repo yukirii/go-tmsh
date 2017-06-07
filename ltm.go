@@ -2,6 +2,7 @@ package tmsh
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -11,7 +12,27 @@ type Node struct {
 	MonitorRule   string
 	MonitorStatus string
 	EnabledState  string
-	EnabledReason string
+}
+
+type Pool struct {
+	ActiveMemberCount int
+	Name              string
+	MonitorRule       string
+	AvailabilityState string
+	EnabledState      string
+	StatusReason      string
+	PoolMembers       []PoolMember
+}
+
+type PoolMember struct {
+	Name              string
+	Addr              string
+	Port              int
+	MonitorRule       string
+	MonitorStatus     string
+	EnabledState      string
+	AvailabilityState string
+	StatusReason      string
 }
 
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
@@ -19,32 +40,8 @@ func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	if strings.Contains(ret, "was not found.") {
 		return nil, fmt.Errorf(ret)
 	}
-
-	node := Node{}
-	for _, line := range strings.Split(ret, "\n") {
-		if strings.HasSuffix(line, "{") || strings.HasSuffix(line, "}") {
-			continue
-		}
-
-		line = strings.TrimSpace(line)
-		columns := strings.SplitAfterN(line, " ", 2)
-
-		if strings.HasPrefix(columns[0], "addr") {
-			node.Addr = columns[1]
-		} else if strings.HasPrefix(columns[0], "name") {
-			node.Name = columns[1]
-		} else if strings.HasPrefix(columns[0], "monitor-rule") {
-			node.MonitorRule = columns[1]
-		} else if strings.HasPrefix(columns[0], "monitor-status") {
-			node.MonitorStatus = columns[1]
-		} else if strings.HasPrefix(columns[0], "status.enabled-state") {
-			node.EnabledState = columns[1]
-		} else if strings.HasPrefix(columns[0], "status.status-reason") {
-			node.EnabledReason = columns[1]
-		}
-	}
-
-	return &node, nil
+	node := ParseShowLtmNode(ret)
+	return node, nil
 }
 
 func (bigip *BigIP) CreateNode(name, ipaddr string) error {
@@ -73,6 +70,79 @@ func (bigip *BigIP) EnableNode(name string) error {
 
 func (bigip *BigIP) DisableNode(name string) error {
 	ret, _ := bigip.ExecuteCommand("modify ltm node " + name + " session user-disabled")
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) GetPool(name string) (*Pool, error) {
+	ret, _ := bigip.ExecuteCommand("show ltm pool " + name + " members field-fmt")
+	if strings.Contains(ret, "was not found.") {
+		return nil, fmt.Errorf(ret)
+	}
+	pool := ParseShowLtmPool(ret)
+	return pool, nil
+}
+
+func (bigip *BigIP) CreatePool(name string) error {
+	ret, _ := bigip.ExecuteCommand("create ltm pool " + name)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) DeletePool(name string) error {
+	ret, _ := bigip.ExecuteCommand("delete ltm pool " + name)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) AddMonitorToPool(poolName, monitorName string) error {
+	ret, _ := bigip.ExecuteCommand("modify ltm pool " + poolName + " monitor '" + monitorName + "'")
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) AddPoolMember(poolName, nodeName, monitorName string, port int) error {
+	member := nodeName + ":" + strconv.Itoa(port)
+	cmd := "modify ltm pool " + poolName + " members add { " + member + " } monitor '" + monitorName + "'"
+	ret, _ := bigip.ExecuteCommand(cmd)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) DeletePoolMember(poolName, nodeName string, port int) error {
+	member := nodeName + ":" + strconv.Itoa(port)
+	cmd := "modify ltm pool " + poolName + " members delete { " + member + " }"
+	ret, _ := bigip.ExecuteCommand(cmd)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) EnablePoolMember(poolName, nodeName string, port int) error {
+	member := nodeName + ":" + strconv.Itoa(port)
+	cmd := "modify ltm pool " + poolName + " members modify { " + member + " { session user-enabled } }"
+	ret, _ := bigip.ExecuteCommand(cmd)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
+
+func (bigip *BigIP) DisablePoolMember(poolName, nodeName string, port int) error {
+	member := nodeName + ":" + strconv.Itoa(port)
+	cmd := "modify ltm pool " + poolName + " members modify { " + member + " { session user-disabled } }"
+	ret, _ := bigip.ExecuteCommand(cmd)
 	if ret != "" {
 		return fmt.Errorf(ret)
 	}
