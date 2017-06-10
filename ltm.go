@@ -211,3 +211,12 @@ func (bigip *BigIP) ApplyPolicyToVirtualServer(vsName, policyName string) error 
 	}
 	return nil
 }
+
+func (bigip *BigIP) RouteAdvertisementEnabled(targetVIP string) error {
+	cmd := "modify ltm virtual-address " + targetVIP + " route-advertisement enabled"
+	ret, _ := bigip.ExecuteCommand(cmd)
+	if ret != "" {
+		return fmt.Errorf(ret)
+	}
+	return nil
+}
