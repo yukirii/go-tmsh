@@ -30,6 +30,34 @@ func (fm *FieldManager) Advance() error {
 	return nil
 }
 
+func ParseListLtmVirtual(str string) *VirtualServer {
+	vs := VirtualServer{}
+
+	fm := NewFieldManager(str)
+
+	for len(fm.lines) > fm.currentLineNum {
+		line := strings.TrimSpace(fm.CurrentLine())
+		columns := strings.SplitAfterN(line, " ", 2)
+
+		switch {
+		case strings.HasPrefix(columns[0], "destination"):
+			vs.Destination = columns[1]
+		case strings.HasPrefix(columns[0], "ip-protocol"):
+			vs.IpProtocol = columns[1]
+		case strings.HasPrefix(columns[0], "mask"):
+			vs.Mask = columns[1]
+		case strings.HasPrefix(columns[0], "partition"):
+			vs.Partition = columns[1]
+		case strings.HasPrefix(columns[0], "pool"):
+			vs.Pool = columns[1]
+		}
+
+		fm.Advance()
+	}
+
+	return &vs
+}
+
 func ParsePoolMemberNodes(fm *FieldManager) []PoolMember {
 	poolMembers := []PoolMember{}
 
