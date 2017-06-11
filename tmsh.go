@@ -3,6 +3,7 @@ package tmsh
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"strings"
 
@@ -83,10 +84,26 @@ func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 	return strings.Join(lines, "\n"), nil
 }
 
-func (bigip *BigIP) Close() {
-	bigip.sshconn.Close()
+func (bigip *BigIP) Save() error {
+	ret, err := bigip.ExecuteCommand("save /sys config current-partition")
+	if err != nil {
+		fmt.Errorf(ret)
+	}
+
+	if strings.Contains(ret, "Syntax Error: \"current-partition\" unknown property") {
+		ret, err = bigip.ExecuteCommand("save /sys config")
+		if err != nil {
+			fmt.Errorf(ret)
+		}
+	}
+
+	if strings.Contains(ret, "Error") {
+		return fmt.Errorf(ret)
+	}
+
+	return nil
 }
 
-func (bigip *BigIP) Save() {
-	bigip.Close()
+func (bigip *BigIP) Close() {
+	bigip.sshconn.Close()
 }
