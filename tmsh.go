@@ -28,6 +28,19 @@ func NewSession(host, port, user, password string) (*BigIP, error) {
 		return nil, err
 	}
 
+	ret, _ := sshconn.Recv("# ")
+	if !strings.Contains(string(ret), "(tmos)") {
+		_, err := sshconn.Send("tmsh")
+		if err != nil {
+			return nil, err
+		}
+
+		ret, err = sshconn.Recv("# ")
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &BigIP{
 		host:    host,
 		user:    user,
@@ -37,7 +50,6 @@ func NewSession(host, port, user, password string) (*BigIP, error) {
 
 func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 	promptSuffix := "# "
-	promptPrefix := bigip.user + "@"
 
 	_, err := bigip.sshconn.Send(cmd)
 	if err != nil {
@@ -60,7 +72,7 @@ func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 		line := removeSpaceAndBackspace(text)
 
 		if strings.HasPrefix(line, "Last login:") ||
-			strings.HasPrefix(line, promptPrefix) ||
+			strings.Contains(line, "(tmos)") ||
 			strings.HasPrefix(line, cmd) {
 			continue
 		}
