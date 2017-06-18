@@ -10,11 +10,11 @@ import (
 
 func showNodeInfo(node *tmsh.Node) {
 	fmt.Println("\nNode Status")
-	fmt.Println("  Name           : ", node.Name)
-	fmt.Println("  Addr           : ", node.Addr)
-	fmt.Println("  Enabled State  : ", node.EnabledState)
-	fmt.Println("  Monitor Rule   : ", node.MonitorRule)
-	fmt.Println("  Monitor Status : ", node.MonitorStatus, "\n")
+	fmt.Println("  Name           :", node.Name)
+	fmt.Println("  Addr           :", node.Addr)
+	fmt.Println("  Enabled State  :", node.EnabledState)
+	fmt.Println("  Monitor Rule   :", node.MonitorRule)
+	fmt.Println("  Monitor Status :", node.MonitorStatus, "\n")
 }
 
 var nodeCmd = &cobra.Command{
