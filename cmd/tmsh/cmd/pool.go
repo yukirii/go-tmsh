@@ -39,7 +39,7 @@ var poolCmd = &cobra.Command{
 	},
 }
 
-var createCmd = &cobra.Command{
+var poolCreateCmd = &cobra.Command{
 	Use:   "create [pool name]",
 	Short: "Create a pool",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -68,7 +68,7 @@ var createCmd = &cobra.Command{
 	},
 }
 
-var deleteCmd = &cobra.Command{
+var poolDeleteCmd = &cobra.Command{
 	Use:   "delete [pool name]",
 	Short: "Delete a pool",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -90,7 +90,7 @@ var deleteCmd = &cobra.Command{
 	},
 }
 
-var showCmd = &cobra.Command{
+var poolShowCmd = &cobra.Command{
 	Use:   "show [pool name]",
 	Short: "Show a pool information",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -111,7 +111,7 @@ var showCmd = &cobra.Command{
 	},
 }
 
-var addMonitorCmd = &cobra.Command{
+var poolAddMonitorCmd = &cobra.Command{
 	Use:   "add-monitor [pool name] [monitor name]",
 	Short: "Add monitor to pool",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -140,7 +140,7 @@ var addMonitorCmd = &cobra.Command{
 	},
 }
 
-var addMemberCmd = &cobra.Command{
+var poolAddMemberCmd = &cobra.Command{
 	Use:   "add-member [pool name] [node name] [port num] [monitor name]",
 	Short: "Add member node to pool",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -175,7 +175,7 @@ var addMemberCmd = &cobra.Command{
 	},
 }
 
-var deleteMemberCmd = &cobra.Command{
+var poolDeleteMemberCmd = &cobra.Command{
 	Use:   "delete-member [pool name] [node name] [port num]",
 	Short: "Delete member node from pool",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -210,7 +210,7 @@ var deleteMemberCmd = &cobra.Command{
 	},
 }
 
-var enableMemberCmd = &cobra.Command{
+var poolEnableMemberCmd = &cobra.Command{
 	Use:   "enable-member [pool name] [node name] [port num]",
 	Short: "Enable member node",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -245,7 +245,7 @@ var enableMemberCmd = &cobra.Command{
 	},
 }
 
-var disableMemberCmd = &cobra.Command{
+var poolDisableMemberCmd = &cobra.Command{
 	Use:   "disable-member [pool name] [node name] [port num]",
 	Short: "Disable member node",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -281,16 +281,16 @@ var disableMemberCmd = &cobra.Command{
 }
 
 func init() {
-	poolCmd.AddCommand(createCmd)
-	poolCmd.AddCommand(deleteCmd)
-	poolCmd.AddCommand(showCmd)
+	poolCmd.AddCommand(poolCreateCmd)
+	poolCmd.AddCommand(poolDeleteCmd)
+	poolCmd.AddCommand(poolShowCmd)
 
-	poolCmd.AddCommand(addMonitorCmd)
+	poolCmd.AddCommand(poolAddMonitorCmd)
 
-	poolCmd.AddCommand(addMemberCmd)
-	poolCmd.AddCommand(deleteMemberCmd)
-	poolCmd.AddCommand(enableMemberCmd)
-	poolCmd.AddCommand(disableMemberCmd)
+	poolCmd.AddCommand(poolAddMemberCmd)
+	poolCmd.AddCommand(poolDeleteMemberCmd)
+	poolCmd.AddCommand(poolEnableMemberCmd)
+	poolCmd.AddCommand(poolDisableMemberCmd)
 
 	RootCmd.AddCommand(poolCmd)
 }

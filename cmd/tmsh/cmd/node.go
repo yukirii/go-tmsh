@@ -161,5 +161,6 @@ func init() {
 	nodeCmd.AddCommand(nodeShowCmd)
 	nodeCmd.AddCommand(nodeEnableCmd)
 	nodeCmd.AddCommand(nodeDisableCmd)
+
 	RootCmd.AddCommand(nodeCmd)
 }
