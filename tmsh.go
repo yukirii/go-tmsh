@@ -4,23 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io"
 	"strings"
-
-	"golang.org/x/crypto/ssh"
 )
 
 type BigIP struct {
 	host    string
 	user    string
 	sshconn *SSHConn
-}
-
-type SSHConn struct {
-	session *ssh.Session
-	stdin   io.WriteCloser
-	stdout  io.Reader
-	stderr  io.Reader
 }
 
 func NewSession(host, port, user, password string) (*BigIP, error) {
