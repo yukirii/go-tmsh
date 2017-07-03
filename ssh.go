@@ -7,6 +7,19 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+type SSH interface {
+	Send(cmd string) (int, error)
+	Recv(suffix string) ([]byte, error)
+	Close() error
+}
+
+type SSHConn struct {
+	session *ssh.Session
+	stdin   io.WriteCloser
+	stdout  io.Reader
+	stderr  io.Reader
+}
+
 type KeyboardInteractive map[string]string
 
 func (ki KeyboardInteractive) Challenge(user, instruction string, questions []string, echos []bool) ([]string, error) {
@@ -19,7 +32,7 @@ func (ki KeyboardInteractive) Challenge(user, instruction string, questions []st
 	return answers, nil
 }
 
-func NewSSHConnection(addr, user, password string) (*SSHConn, error) {
+func NewSSHConnection(addr, user, password string) (SSH, error) {
 	session, err := newSSHSession(addr, user, password)
 	if err != nil {
 		return nil, err
