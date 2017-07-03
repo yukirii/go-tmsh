@@ -10,7 +10,7 @@ import (
 type BigIP struct {
 	host    string
 	user    string
-	sshconn *SSHConn
+	sshconn SSH
 }
 
 func NewSession(host, port, user, password string) (*BigIP, error) {
