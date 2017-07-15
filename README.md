@@ -7,7 +7,7 @@ Golang wrapper library for BIG-IP Traffic Management Shell (TMSH)
 ## Install
 
 ```bash
-$ go get github.com/shiftky/go-tmsh
+$ go get github.com/shiftky/go-tmsh/...
 ```
 
 ## Usage
