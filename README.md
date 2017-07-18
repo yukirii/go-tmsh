@@ -4,6 +4,13 @@
 
 Golang wrapper library for BIG-IP Traffic Management Shell (TMSH)
 
+## Tested versions of BIG-IP
+
+Currently the following versions of BIG-IP are tested.
+
+* v11.5.3
+* v11.2.1
+
 ## Install
 
 ```bash
