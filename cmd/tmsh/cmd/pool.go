@@ -16,10 +16,10 @@ func showPoolInfo(pool *tmsh.Pool) {
 	fmt.Println("  Monitor Rule       :", pool.MonitorRule)
 	fmt.Println("  Availability State :", pool.AvailabilityState)
 	fmt.Println("  Enabled State      :", pool.EnabledState)
-	fmt.Println("  Status Reason      :", pool.StatusReason)
+	fmt.Println("  Status Reason      :", pool.StatusReason, "\n")
 
 	if pool.ActiveMemberCount > 0 {
-		fmt.Println("\nPool Members")
+		fmt.Println("Pool Members")
 		for _, member := range pool.PoolMembers {
 			fmt.Println("  #", member.Name, "("+member.Addr+":"+strconv.Itoa(member.Port)+")")
 			fmt.Println("    Monitor Rule       :", member.MonitorRule)
