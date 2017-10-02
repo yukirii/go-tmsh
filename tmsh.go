@@ -32,11 +32,18 @@ func NewSession(host, port, user, password string) (*BigIP, error) {
 		}
 	}
 
-	return &BigIP{
+	bigip := &BigIP{
 		host:    host,
 		user:    user,
 		sshconn: sshconn,
-	}, nil
+	}
+
+	// Suppress pager output
+	if _, err := bigip.ExecuteCommand("modify cli preference pager disabled display-threshold 0"); err != nil {
+		return nil, err
+	}
+
+	return bigip, nil
 }
 
 func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
