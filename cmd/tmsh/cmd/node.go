@@ -39,7 +39,7 @@ var nodeCreateCmd = &cobra.Command{
 
 		err := bigip.CreateNode(args[0], args[1])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -47,7 +47,7 @@ var nodeCreateCmd = &cobra.Command{
 
 		node, err := bigip.GetNode(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showNodeInfo(node)
@@ -68,7 +68,7 @@ var nodeDeleteCmd = &cobra.Command{
 
 		err := bigip.DeleteNode(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -90,7 +90,7 @@ var nodeShowCmd = &cobra.Command{
 
 		node, err := bigip.GetNode(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showNodeInfo(node)
@@ -111,7 +111,7 @@ var nodeEnableCmd = &cobra.Command{
 
 		err := bigip.EnableNode(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -119,7 +119,7 @@ var nodeEnableCmd = &cobra.Command{
 
 		node, err := bigip.GetNode(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showNodeInfo(node)
@@ -140,7 +140,7 @@ var nodeDisableCmd = &cobra.Command{
 
 		err := bigip.DisableNode(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -148,7 +148,7 @@ var nodeDisableCmd = &cobra.Command{
 
 		node, err := bigip.GetNode(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showNodeInfo(node)

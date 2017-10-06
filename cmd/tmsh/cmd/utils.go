@@ -16,7 +16,7 @@ func NewSession() *tmsh.BigIP {
 		viper.GetString("tmsh_password"),
 	)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
