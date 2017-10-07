@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/shiftky/go-tmsh"
 )
@@ -11,7 +12,7 @@ func main() {
 	// Create New SSH Session
 	bigip, err := tmsh.NewSession("lb01.example.com", "22", "admin", "secret")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 	}
 	defer bigip.Close()
 

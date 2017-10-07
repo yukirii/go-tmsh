@@ -53,7 +53,7 @@ var poolCreateCmd = &cobra.Command{
 
 		err := bigip.CreatePool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -61,7 +61,7 @@ var poolCreateCmd = &cobra.Command{
 
 		pool, err := bigip.GetPool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showPoolInfo(pool)
@@ -82,7 +82,7 @@ var poolDeleteCmd = &cobra.Command{
 
 		err := bigip.DeletePool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -104,7 +104,7 @@ var poolShowCmd = &cobra.Command{
 
 		pool, err := bigip.GetPool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showPoolInfo(pool)
@@ -125,7 +125,7 @@ var poolAddMonitorCmd = &cobra.Command{
 
 		err := bigip.AddMonitorToPool(args[0], args[1])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -133,7 +133,7 @@ var poolAddMonitorCmd = &cobra.Command{
 
 		pool, err := bigip.GetPool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showPoolInfo(pool)
@@ -154,13 +154,13 @@ var poolAddMemberCmd = &cobra.Command{
 
 		port, err := strconv.Atoi(args[2])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
 		err = bigip.AddPoolMember(args[0], args[1], args[3], port)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -168,7 +168,7 @@ var poolAddMemberCmd = &cobra.Command{
 
 		pool, err := bigip.GetPool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showPoolInfo(pool)
@@ -189,13 +189,13 @@ var poolDeleteMemberCmd = &cobra.Command{
 
 		port, err := strconv.Atoi(args[2])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
 		err = bigip.DeletePoolMember(args[0], args[1], port)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -203,7 +203,7 @@ var poolDeleteMemberCmd = &cobra.Command{
 
 		pool, err := bigip.GetPool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showPoolInfo(pool)
@@ -224,13 +224,13 @@ var poolEnableMemberCmd = &cobra.Command{
 
 		port, err := strconv.Atoi(args[2])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
 		err = bigip.EnablePoolMember(args[0], args[1], port)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -238,7 +238,7 @@ var poolEnableMemberCmd = &cobra.Command{
 
 		pool, err := bigip.GetPool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showPoolInfo(pool)
@@ -259,13 +259,13 @@ var poolDisableMemberCmd = &cobra.Command{
 
 		port, err := strconv.Atoi(args[2])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
 		err = bigip.DisablePoolMember(args[0], args[1], port)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 
@@ -273,7 +273,7 @@ var poolDisableMemberCmd = &cobra.Command{
 
 		pool, err := bigip.GetPool(args[0])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		showPoolInfo(pool)
