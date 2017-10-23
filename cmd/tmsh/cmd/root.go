@@ -19,7 +19,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number of tmsh-cli command.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("tmsh v0.1.0")
+		fmt.Println("tmsh v0.2.0")
 	},
 }
 
