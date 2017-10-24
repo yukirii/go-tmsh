@@ -1,5 +1,6 @@
 builds:
   - binary: tmsh
+    main: ./cmd/tmsh/main.go
     goos:
       - darwin
       - linux
