@@ -1,0 +1,7 @@
+builds:
+  - binary: tmsh
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
