@@ -5,23 +5,6 @@ import (
 	"strings"
 )
 
-type Token int
-
-const (
-	ILLEGAL Token = iota
-	EOF
-	WS
-	NEWLINE
-
-	L_BRACE
-	R_BRACE
-
-	IDENT
-
-	LTM
-	TYPE
-)
-
 type Scanner struct {
 	r *strings.Reader
 }
@@ -29,13 +12,15 @@ type Scanner struct {
 func NewScanner(data string) *Scanner {
 	return &Scanner{r: strings.NewReader(data)}
 }
+
 func isWhitespace(ch rune) bool {
 	return ch == ' ' || ch == '\t'
 }
 
 func isLetter(ch rune) bool {
 	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
-		ch == '.' || ch == '_' || ch == '-' || ch == ':'
+		ch == '.' || ch == '_' || ch == '-' || ch == ':' ||
+		ch == '/' || ch == '(' || ch == ')'
 }
 
 func isDigit(ch rune) bool {
@@ -52,7 +37,7 @@ func (s *Scanner) read() rune {
 
 func (s *Scanner) unread() { _ = s.r.UnreadRune() }
 
-func (s *Scanner) Scan() (tok Token, lit string) {
+func (s *Scanner) Scan() (tok int, lit string) {
 	ch := s.read()
 
 	if isWhitespace(ch) {
@@ -77,7 +62,7 @@ func (s *Scanner) Scan() (tok Token, lit string) {
 	return ILLEGAL, string(ch)
 }
 
-func (s *Scanner) scanWhitespace() (tok Token, lit string) {
+func (s *Scanner) scanWhitespace() (tok int, lit string) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -95,7 +80,7 @@ func (s *Scanner) scanWhitespace() (tok Token, lit string) {
 	return WS, buf.String()
 }
 
-func (s *Scanner) scanIdent() (tok Token, lit string) {
+func (s *Scanner) scanIdent() (tok int, lit string) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -113,8 +98,6 @@ func (s *Scanner) scanIdent() (tok Token, lit string) {
 	switch buf.String() {
 	case "ltm":
 		return LTM, buf.String()
-	case "node", "pool", "virtual":
-		return TYPE, buf.String()
 	}
 
 	return IDENT, buf.String()

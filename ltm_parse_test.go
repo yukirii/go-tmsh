@@ -70,7 +70,11 @@ func TestParseShowLtmNode(t *testing.T) {
     tot-requests 0
 }`
 
-	node := ParseShowLtmNode(str)
+	var node Node
+	err := Decode(str, &node)
+	if err != nil {
+		t.Errorf("got %v", err)
+	}
 
 	expect := &Node{
 		Addr:          "192.0.2.1",
@@ -174,6 +178,12 @@ func TestParseShowLtmPool(t *testing.T) {
     tot-requests 0
 }`
 
+	var node Node
+	err := Decode(str, &node)
+	if err != nil {
+		t.Errorf("got %v", err)
+	}
+
 	pool := ParseShowLtmPool(str)
 
 	poolMembers := []PoolMember{
@@ -228,6 +238,12 @@ func TestParseListLtmVirtual(t *testing.T) {
     source 0.0.0.0/0
     vs-index 1234
 }`
+
+	var node Node
+	err := Decode(str, &node)
+	if err != nil {
+		t.Errorf("got %v", err)
+	}
 
 	vs := ParseListLtmVirtual(str)
 
