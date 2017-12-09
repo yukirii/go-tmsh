@@ -35,7 +35,7 @@ type Member struct {
 	expr  Expression
 }
 
-%type<expr> ltm
+%type<expr> ltm_obj
 %type<expr> object
 %type<expr> members
 %type<expr> value
@@ -51,18 +51,18 @@ type Member struct {
 
 %%
 
-ltm
+ltm_obj
 	: LTM IDENT IDENT object
 	{
 		$$ = $1
 	}
 
 object
-	: L_BRACE NEWLINE R_BRACE
+	: L_BRACE R_BRACE
 	{
 		$$ = $1
 	}
-	| L_BRACE R_BRACE
+	| L_BRACE NEWLINE R_BRACE
 	{
 		$$ = $1
 	}
