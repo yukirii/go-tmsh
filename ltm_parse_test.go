@@ -71,8 +71,7 @@ func TestParseShowLtmNode(t *testing.T) {
 }`
 
 	var node Node
-	err := Decode(str, &node)
-	if err != nil {
+	if err := Unmarshal(str, &node); err != nil {
 		t.Errorf("got %v", err)
 	}
 
@@ -178,13 +177,12 @@ func TestParseShowLtmPool(t *testing.T) {
     tot-requests 0
 }`
 
-	var node Node
-	err := Decode(str, &node)
-	if err != nil {
+	var pool Pool
+	if err := Unmarshal(str, &pool); err != nil {
 		t.Errorf("got %v", err)
 	}
 
-	pool := ParseShowLtmPool(str)
+	poolp := ParseShowLtmPool(str)
 
 	poolMembers := []PoolMember{
 		PoolMember{
@@ -219,8 +217,8 @@ func TestParseShowLtmPool(t *testing.T) {
 		PoolMembers:       poolMembers,
 	}
 
-	if !reflect.DeepEqual(pool, expect) {
-		t.Errorf("\ngot %v\nwant %v", pool, expect)
+	if !reflect.DeepEqual(poolp, expect) {
+		t.Errorf("\ngot %v\nwant %v", poolp, expect)
 	}
 }
 
@@ -239,13 +237,12 @@ func TestParseListLtmVirtual(t *testing.T) {
     vs-index 1234
 }`
 
-	var node Node
-	err := Decode(str, &node)
-	if err != nil {
+	var vs VirtualServer
+	if err := Unmarshal(str, &vs); err != nil {
 		t.Errorf("got %v", err)
 	}
 
-	vs := ParseListLtmVirtual(str)
+	vsp := ParseListLtmVirtual(str)
 
 	expect := &VirtualServer{
 		Destination: "203.0.113.1:http",
@@ -255,7 +252,7 @@ func TestParseListLtmVirtual(t *testing.T) {
 		Pool:        "api.example.com_80",
 	}
 
-	if !reflect.DeepEqual(vs, expect) {
-		t.Errorf("\ngot %v\nwant %v", vs, expect)
+	if !reflect.DeepEqual(vsp, expect) {
+		t.Errorf("\ngot %v\nwant %v", vsp, expect)
 	}
 }

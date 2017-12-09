@@ -43,6 +43,14 @@ type VirtualServer struct {
 	Pool        string
 }
 
+func Unmarshal(data string, v interface{}) error {
+	l := Lexer{s: NewScanner(data)}
+	if yyParse(&l) != 0 {
+		return fmt.Errorf("Parse error")
+	}
+	return nil
+}
+
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	ret, _ := bigip.ExecuteCommand("show ltm node " + name + " field-fmt")
 	if strings.Contains(ret, "was not found.") {

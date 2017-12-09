@@ -97,14 +97,6 @@ func (l *Lexer) Error(e string) {
 	panic(e)
 }
 
-func Decode(data string, node *Node) error {
-	l := Lexer{s: NewScanner(data)}
-	if yyParse(&l) != 0 {
-		panic("Parse error")
-	}
-	return nil
-}
-
 //line yacctab:1
 var yyExca = [...]int{
 	-1, 1,

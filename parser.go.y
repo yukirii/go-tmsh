@@ -135,11 +135,3 @@ func (l *Lexer) Lex(lval *yySymType) int {
 func (l *Lexer) Error(e string) {
 	panic(e)
 }
-
-func Decode(data string, node *Node) error {
-	l := Lexer{s: NewScanner(data)}
-	if yyParse(&l) != 0 {
-		panic("Parse error")
-	}
-	return nil
-}
