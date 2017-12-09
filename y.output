@@ -1,0 +1,193 @@
+
+state 0
+	$accept: .ltm $end 
+
+	LTM  shift 2
+	.  error
+
+	ltm  goto 1
+
+state 1
+	$accept:  ltm.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	ltm:  LTM.IDENT IDENT object 
+
+	IDENT  shift 3
+	.  error
+
+
+state 3
+	ltm:  LTM IDENT.IDENT object 
+
+	IDENT  shift 4
+	.  error
+
+
+state 4
+	ltm:  LTM IDENT IDENT.object 
+
+	L_BRACE  shift 6
+	.  error
+
+	object  goto 5
+
+state 5
+	ltm:  LTM IDENT IDENT object.    (1)
+
+	.  reduce 1 (src line 54)
+
+
+state 6
+	object:  L_BRACE.R_BRACE 
+	object:  L_BRACE.NEWLINE R_BRACE 
+	object:  L_BRACE.NEWLINE members R_BRACE 
+
+	NEWLINE  shift 8
+	R_BRACE  shift 7
+	.  error
+
+
+state 7
+	object:  L_BRACE R_BRACE.    (2)
+
+	.  reduce 2 (src line 64)
+
+
+state 8
+	object:  L_BRACE NEWLINE.R_BRACE 
+	object:  L_BRACE NEWLINE.members R_BRACE 
+
+	R_BRACE  shift 9
+	IDENT  shift 11
+	.  error
+
+	members  goto 10
+
+state 9
+	object:  L_BRACE NEWLINE R_BRACE.    (3)
+
+	.  reduce 3 (src line 69)
+
+
+state 10
+	object:  L_BRACE NEWLINE members.R_BRACE 
+	members:  members.IDENT object NEWLINE 
+	members:  members.IDENT value NEWLINE 
+
+	R_BRACE  shift 12
+	IDENT  shift 13
+	.  error
+
+
+state 11
+	members:  IDENT.value NEWLINE 
+	members:  IDENT.object NEWLINE 
+
+	L_BRACE  shift 6
+	IDENT  shift 16
+	.  error
+
+	object  goto 15
+	value  goto 14
+
+state 12
+	object:  L_BRACE NEWLINE members R_BRACE.    (4)
+
+	.  reduce 4 (src line 73)
+
+
+state 13
+	members:  members IDENT.object NEWLINE 
+	members:  members IDENT.value NEWLINE 
+
+	L_BRACE  shift 6
+	IDENT  shift 16
+	.  error
+
+	object  goto 17
+	value  goto 18
+
+state 14
+	members:  IDENT value.NEWLINE 
+
+	NEWLINE  shift 19
+	.  error
+
+
+state 15
+	members:  IDENT object.NEWLINE 
+
+	NEWLINE  shift 20
+	.  error
+
+
+state 16
+	value:  IDENT.value 
+	value:  IDENT.    (10)
+
+	IDENT  shift 16
+	.  reduce 10 (src line 103)
+
+	value  goto 21
+
+state 17
+	members:  members IDENT object.NEWLINE 
+
+	NEWLINE  shift 22
+	.  error
+
+
+state 18
+	members:  members IDENT value.NEWLINE 
+
+	NEWLINE  shift 23
+	.  error
+
+
+state 19
+	members:  IDENT value NEWLINE.    (5)
+
+	.  reduce 5 (src line 78)
+
+
+state 20
+	members:  IDENT object NEWLINE.    (6)
+
+	.  reduce 6 (src line 83)
+
+
+state 21
+	value:  IDENT value.    (9)
+
+	.  reduce 9 (src line 98)
+
+
+state 22
+	members:  members IDENT object NEWLINE.    (7)
+
+	.  reduce 7 (src line 87)
+
+
+state 23
+	members:  members IDENT value NEWLINE.    (8)
+
+	.  reduce 8 (src line 92)
+
+
+11 terminals, 5 nonterminals
+11 grammar rules, 24/8000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+54 working sets used
+memory: parser 7/120000
+6 extra closures
+19 shift entries, 1 exceptions
+8 goto entries
+0 entries saved by goto default
+Optimizer space used: output 25/120000
+25 table entries, 0 zero
+maximum spread: 11, maximum offset: 16

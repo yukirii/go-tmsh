@@ -5,15 +5,13 @@ import (
 	"fmt"
 )
 
-type Expression interface{}
-
 type Token struct {
 	token   int
 	literal string
 }
 
-type Ltm struct {
-	restype string
+type LTMObject struct {
+	resType string
 	fqdn    string
 	object  Object
 }
@@ -23,22 +21,24 @@ type Object struct {
 }
 
 type Member struct {
-	key     string
-	value   string
-	members []Member
+	key   string
+	value interface{}
 }
 
 %}
 
 %union{
-	token Token
-	expr  Expression
+	token   Token
+	ltm     LTMObject
+	object  Object
+	members []Member
+	value   interface{}
 }
 
-%type<expr> ltm_obj
-%type<expr> object
-%type<expr> members
-%type<expr> value
+%type<ltm>     ltm
+%type<object>  object
+%type<members> members
+%type<value>   value
 
 %token<token> ILLEGAL
 %token<token> EOF
@@ -51,59 +51,65 @@ type Member struct {
 
 %%
 
-ltm_obj
+ltm
 	: LTM IDENT IDENT object
 	{
-		$$ = $1
+		yylex.(*Lexer).result = LTMObject{
+			resType: $2.literal,
+			fqdn: $3.literal,
+			object: $4,
+		}
 	}
 
 object
 	: L_BRACE R_BRACE
 	{
-		$$ = $1
+		$$ = Object{}
 	}
 	| L_BRACE NEWLINE R_BRACE
 	{
-		$$ = $1
+		$$ = Object{}
 	}
 	| L_BRACE NEWLINE members R_BRACE
 	{
-		$$ = $1
+		$$ = Object{members: $3}
 	}
 
 members
   : IDENT value NEWLINE
 	{
-		$$ = $1
+		$$ = []Member{Member{key: $1.literal, value: $2}}
 	}
 	| IDENT object NEWLINE
 	{
-		$$ = $1
+		$$ = []Member{Member{key: $1.literal, value: $2}}
 	}
 	| members IDENT object NEWLINE
 	{
-		$$ = $1
+		m := Member{key: $2.literal, value: $3}
+		$$ = append($1, m)
 	}
 	| members IDENT value NEWLINE
 	{
-		$$ = $1
+		m := Member{key: $2.literal, value: $3}
+		$$ = append($1, m)
 	}
 
 value
-	: IDENT
+	: IDENT value
 	{
-		$$ = $1
+		$$ = fmt.Sprintf("%s %s", $1.literal, $2)
 	}
-	| value IDENT
+	| IDENT
 	{
-		$$ = $1
+		$$ = $1.literal
 	}
 
 %%
 
 type Lexer struct {
 	s      *Scanner
-	result Expression
+	result LTMObject
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
@@ -117,7 +123,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		}
 	}
 
-	fmt.Println(tok, lit)
+	lval.token = Token{token: tok, literal: lit}
 
 	if tok == EOF {
 		return 0
