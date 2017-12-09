@@ -7,40 +7,40 @@ import (
 )
 
 type Node struct {
-	Name          string
-	Addr          string
-	MonitorRule   string
-	MonitorStatus string
-	EnabledState  string
+	Name          string `ltm:"name"`
+	Addr          string `ltm:"addr"`
+	MonitorRule   string `ltm:"monitor-rule"`
+	MonitorStatus string `ltm:"monitor-status"`
+	EnabledState  string `ltm:"status.enabled-state"`
 }
 
 type Pool struct {
-	ActiveMemberCount int
-	Name              string
-	MonitorRule       string
-	AvailabilityState string
-	EnabledState      string
-	StatusReason      string
-	PoolMembers       []PoolMember
+	ActiveMemberCount int          `ltm:"active-member-cnt"`
+	Name              string       `ltm:"monitor-rule"`
+	MonitorRule       string       `ltm:"name"`
+	AvailabilityState string       `ltm:"status.availability-state available"`
+	EnabledState      string       `ltm:"status.enabled-state enabled"`
+	StatusReason      string       `ltm:"status.status-reason The pool is available"`
+	PoolMembers       []PoolMember `ltm:"members"`
 }
 
 type PoolMember struct {
-	Name              string
-	Addr              string
-	Port              int
-	MonitorRule       string
-	MonitorStatus     string
-	EnabledState      string
-	AvailabilityState string
-	StatusReason      string
+	Name              string `ltm:"name"`
+	Addr              string `ltm:"addr"`
+	Port              int    `ltm:"port"`
+	MonitorRule       string `ltm:"monitor-rule"`
+	MonitorStatus     string `ltm:"monitor-status"`
+	EnabledState      string `ltm:"status.enabled-state disabled"`
+	AvailabilityState string `ltm:"status.availability-state"`
+	StatusReason      string `ltm:"status.status-reason"`
 }
 
 type VirtualServer struct {
-	Destination string
-	IpProtocol  string
-	Mask        string
-	Partition   string
-	Pool        string
+	Destination string `ltm:"destination"`
+	IpProtocol  string `ltm:"ip-protocol"`
+	Mask        string `ltm:"mask"`
+	Partition   string `ltm:"partition"`
+	Pool        string `ltm:"pool"`
 }
 
 func Unmarshal(data string, v interface{}) error {
