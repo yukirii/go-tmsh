@@ -16,11 +16,11 @@ type Node struct {
 
 type Pool struct {
 	ActiveMemberCount int          `ltm:"active-member-cnt"`
-	Name              string       `ltm:"monitor-rule"`
-	MonitorRule       string       `ltm:"name"`
-	AvailabilityState string       `ltm:"status.availability-state available"`
-	EnabledState      string       `ltm:"status.enabled-state enabled"`
-	StatusReason      string       `ltm:"status.status-reason The pool is available"`
+	Name              string       `ltm:"name"`
+	MonitorRule       string       `ltm:"monitor-rule"`
+	AvailabilityState string       `ltm:"status.availability-state"`
+	EnabledState      string       `ltm:"status.enabled-state"`
+	StatusReason      string       `ltm:"status.status-reason"`
 	PoolMembers       []PoolMember `ltm:"members"`
 }
 
@@ -30,12 +30,13 @@ type PoolMember struct {
 	Port              int    `ltm:"port"`
 	MonitorRule       string `ltm:"monitor-rule"`
 	MonitorStatus     string `ltm:"monitor-status"`
-	EnabledState      string `ltm:"status.enabled-state disabled"`
+	EnabledState      string `ltm:"status.enabled-state"`
 	AvailabilityState string `ltm:"status.availability-state"`
 	StatusReason      string `ltm:"status.status-reason"`
 }
 
 type VirtualServer struct {
+	Name        string `ltm:"name"`
 	Destination string `ltm:"destination"`
 	IpProtocol  string `ltm:"ip-protocol"`
 	Mask        string `ltm:"mask"`
