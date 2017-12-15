@@ -5,38 +5,42 @@ import (
 	"fmt"
 )
 
+const (
+	ltmNodeNode = iota
+	ltmPoolNode
+	ltmVirtualNode
+	keyNode
+	structNode
+	scalarNode
+)
+
+type nodeType int
+
+type node struct {
+	kind    nodeType
+	value    string
+	children []node
+}
+
 type Token struct {
 	token   int
 	literal string
-}
-
-type LTMObject struct {
-	resType string
-	fqdn    string
-	object  Object
-}
-
-type Object struct {
-	members []Member
-}
-
-type Member struct {
-	key   string
-	value interface{}
 }
 
 %}
 
 %union{
 	token   Token
-	ltm     LTMObject
-	object  Object
-	members []Member
-	value   interface{}
+	ltm     node
+	object  node
+	pair    node
+	members []node
+	value   node
 }
 
 %type<ltm>     ltm
 %type<object>  object
+%type<pair>    pair
 %type<members> members
 %type<value>   value
 
@@ -54,62 +58,72 @@ type Member struct {
 ltm
 	: LTM IDENT IDENT object
 	{
-		yylex.(*Lexer).result = LTMObject{
-			resType: $2.literal,
-			fqdn: $3.literal,
-			object: $4,
+		var kind nodeType
+		switch $2.literal {
+		case "node":
+			kind = ltmNodeNode
+		case "pool":
+			kind = ltmPoolNode
+		case "virtual":
+			kind = ltmVirtualNode
+		}
+		yylex.(*Lexer).result = node{
+			kind: kind,
+			value: $3.literal,
+			children: []node{$4},
 		}
 	}
 
 object
 	: L_BRACE R_BRACE
 	{
-		$$ = Object{}
+		$$ = node{kind: structNode, value: "", children: []node{}}
 	}
 	| L_BRACE NEWLINE R_BRACE
 	{
-		$$ = Object{}
+		$$ = node{kind: structNode, value: "", children: []node{}}
 	}
 	| L_BRACE NEWLINE members R_BRACE
 	{
-		$$ = Object{members: $3}
+		$$ = node{kind: structNode, value: "", children: $3}
 	}
 
 members
+  : pair
+	{
+		$$ = []node{$1}
+	}
+  | members pair
+	{
+		$$ = append($1, $2)
+	}
+
+pair
   : IDENT value NEWLINE
 	{
-		$$ = []Member{Member{key: $1.literal, value: $2}}
+		$$ = node{kind: keyNode, value: $1.literal, children: []node{$2}}
 	}
 	| IDENT object NEWLINE
 	{
-		$$ = []Member{Member{key: $1.literal, value: $2}}
-	}
-	| members IDENT object NEWLINE
-	{
-		m := Member{key: $2.literal, value: $3}
-		$$ = append($1, m)
-	}
-	| members IDENT value NEWLINE
-	{
-		m := Member{key: $2.literal, value: $3}
-		$$ = append($1, m)
+		$$ = node{kind: keyNode, value: $1.literal, children: []node{$2}}
 	}
 
 value
 	: IDENT value
 	{
-		$$ = fmt.Sprintf("%s %s", $1.literal, $2)
+		s := fmt.Sprintf("%s %s", $1.literal, $2.value)
+		$$ = node{kind: scalarNode, value: s, children: []node{}}
 	}
 	| IDENT
 	{
-		$$ = $1.literal
+		$$ = node{kind: scalarNode, value: $1.literal, children: []node{}}
 	}
 
 %%
 
 type Lexer struct {
 	s      *Scanner
-	result LTMObject
+	result node
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
