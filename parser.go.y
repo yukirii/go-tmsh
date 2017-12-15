@@ -19,7 +19,7 @@ type nodeType int
 type node struct {
 	kind    nodeType
 	value    string
-	children []node
+	children []*node
 }
 
 type Token struct {
@@ -31,11 +31,11 @@ type Token struct {
 
 %union{
 	token   Token
-	ltm     node
-	object  node
-	pair    node
-	members []node
-	value   node
+	ltm     *node
+	object  *node
+	pair    *node
+	members []*node
+	value   *node
 }
 
 %type<ltm>     ltm
@@ -67,31 +67,31 @@ ltm
 		case "virtual":
 			kind = ltmVirtualNode
 		}
-		yylex.(*Lexer).result = node{
+		yylex.(*Lexer).result = &node{
 			kind: kind,
 			value: $3.literal,
-			children: []node{$4},
+			children: []*node{$4},
 		}
 	}
 
 object
 	: L_BRACE R_BRACE
 	{
-		$$ = node{kind: structNode, value: "", children: []node{}}
+		$$ = &node{kind: structNode, value: "", children: []*node{}}
 	}
 	| L_BRACE NEWLINE R_BRACE
 	{
-		$$ = node{kind: structNode, value: "", children: []node{}}
+		$$ = &node{kind: structNode, value: "", children: []*node{}}
 	}
 	| L_BRACE NEWLINE members R_BRACE
 	{
-		$$ = node{kind: structNode, value: "", children: $3}
+		$$ = &node{kind: structNode, value: "", children: $3}
 	}
 
 members
   : pair
 	{
-		$$ = []node{$1}
+		$$ = []*node{$1}
 	}
   | members pair
 	{
@@ -101,29 +101,29 @@ members
 pair
   : IDENT value NEWLINE
 	{
-		$$ = node{kind: keyNode, value: $1.literal, children: []node{$2}}
+		$$ = &node{kind: keyNode, value: $1.literal, children: []*node{$2}}
 	}
 	| IDENT object NEWLINE
 	{
-		$$ = node{kind: keyNode, value: $1.literal, children: []node{$2}}
+		$$ = &node{kind: keyNode, value: $1.literal, children: []*node{$2}}
 	}
 
 value
 	: IDENT value
 	{
 		s := fmt.Sprintf("%s %s", $1.literal, $2.value)
-		$$ = node{kind: scalarNode, value: s, children: []node{}}
+		$$ = &node{kind: scalarNode, value: s, children: []*node{}}
 	}
 	| IDENT
 	{
-		$$ = node{kind: scalarNode, value: $1.literal, children: []node{}}
+		$$ = &node{kind: scalarNode, value: $1.literal, children: []*node{}}
 	}
 
 %%
 
 type Lexer struct {
 	s      *Scanner
-	result node
+	result *node
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {

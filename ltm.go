@@ -25,7 +25,7 @@ type Pool struct {
 }
 
 type PoolMember struct {
-	Name              string `ltm:"name"`
+	Name              string `ltm:"node-name"`
 	Addr              string `ltm:"addr"`
 	Port              int    `ltm:"port"`
 	MonitorRule       string `ltm:"monitor-rule"`
@@ -44,21 +44,18 @@ type VirtualServer struct {
 	Pool        string `ltm:"pool"`
 }
 
-func Unmarshal(data string, v interface{}) error {
-	l := Lexer{s: NewScanner(data)}
-	if yyParse(&l) != 0 {
-		return fmt.Errorf("Parse error")
-	}
-	return nil
-}
-
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	ret, _ := bigip.ExecuteCommand("show ltm node " + name + " field-fmt")
 	if strings.Contains(ret, "was not found.") {
 		return nil, fmt.Errorf(ret)
 	}
-	node := ParseShowLtmNode(ret)
-	return node, nil
+
+	var node Node
+	if err := Unmarshal(ret, &node); err != nil {
+		return nil, err
+	}
+
+	return &node, nil
 }
 
 func (bigip *BigIP) CreateNode(name, ipaddr string) error {
@@ -98,8 +95,13 @@ func (bigip *BigIP) GetPool(name string) (*Pool, error) {
 	if strings.Contains(ret, "was not found.") {
 		return nil, fmt.Errorf(ret)
 	}
-	pool := ParseShowLtmPool(ret)
-	return pool, nil
+
+	var pool Pool
+	if err := Unmarshal(ret, &pool); err != nil {
+		return nil, err
+	}
+
+	return &pool, nil
 }
 
 func (bigip *BigIP) CreatePool(name string) error {
@@ -171,9 +173,13 @@ func (bigip *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 	if strings.Contains(ret, "was not found.") {
 		return nil, fmt.Errorf(ret)
 	}
-	vs := ParseListLtmVirtual(ret)
-	return vs, nil
 
+	var vs VirtualServer
+	if err := Unmarshal(ret, &vs); err != nil {
+		return nil, err
+	}
+
+	return &vs, nil
 }
 
 func (bigip *BigIP) CreateVirtualServer(vsName, poolName, targetVIP, defaultProfileName string, targetPort int) error {
