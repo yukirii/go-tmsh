@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 func Unmarshal(data string, out interface{}) error {
+	data = strings.Trim(data, "\n")
+
 	l := Lexer{s: NewScanner(data)}
 	if yyParse(&l) != 0 {
 		return fmt.Errorf("Parse error")
