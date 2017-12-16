@@ -49,6 +49,10 @@ type Profile struct {
 	Context string `ltm:"context"`
 }
 
+func (bigip *BigIP) GetAllNodes() ([]Node, error) {
+	return nil, nil
+}
+
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	ret, _ := bigip.ExecuteCommand("show ltm node " + name + " field-fmt")
 	if strings.Contains(ret, "was not found.") {
@@ -93,6 +97,10 @@ func (bigip *BigIP) DisableNode(name string) error {
 		return fmt.Errorf(ret)
 	}
 	return nil
+}
+
+func (bigip *BigIP) GetAllPools() ([]Pool, error) {
+	return nil, nil
 }
 
 func (bigip *BigIP) GetPool(name string) (*Pool, error) {
@@ -171,6 +179,10 @@ func (bigip *BigIP) DisablePoolMember(poolName, nodeName string, port int) error
 		return fmt.Errorf(ret)
 	}
 	return nil
+}
+
+func (bigip *BigIP) GetAllVirtualServers() ([]VirtualServer, error) {
+	return nil, nil
 }
 
 func (bigip *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
