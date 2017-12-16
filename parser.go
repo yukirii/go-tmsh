@@ -97,7 +97,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 }
 
 func (l *Lexer) Error(e string) {
-	panic(e)
+	panic(fmt.Sprintf("line %d : %s", l.s.line, e))
 }
 
 //line yacctab:1

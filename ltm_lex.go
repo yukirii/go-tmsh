@@ -6,7 +6,8 @@ import (
 )
 
 type Scanner struct {
-	r *strings.Reader
+	r    *strings.Reader
+	line int
 }
 
 func NewScanner(data string) *Scanner {
@@ -52,6 +53,7 @@ func (s *Scanner) Scan() (tok int, lit string) {
 	case rune(0):
 		return EOF, ""
 	case '\n':
+		s.line++
 		return NEWLINE, string(ch)
 	case '{':
 		return L_BRACE, string(ch)
