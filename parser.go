@@ -69,7 +69,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line parser.go.y:122
+//line parser.go.y:126
 
 type Lexer struct {
 	s      *Scanner
@@ -109,45 +109,45 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 23
+const yyLast = 24
 
 var yyAct = [...]int{
 
-	15, 5, 6, 2, 17, 13, 12, 9, 12, 11,
-	17, 8, 4, 7, 16, 3, 6, 19, 20, 18,
-	14, 10, 1,
+	16, 5, 15, 6, 2, 18, 13, 12, 9, 12,
+	11, 18, 4, 8, 17, 7, 6, 3, 20, 21,
+	19, 14, 10, 1,
 }
 var yyPact = [...]int{
 
-	-8, -1000, 5, 2, 8, -1000, 4, -1000, -2, -1000,
-	-4, -1000, -6, -1000, -1000, 12, 10, 0, -1000, -1000,
-	-1000,
+	-7, -1000, 7, 2, 8, -1000, 6, -1000, -1, -1000,
+	-3, -1000, -5, -1000, -1000, -1000, 13, 11, 1, -1000,
+	-1000, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 22, 1, 9, 21, 0,
+	0, 23, 1, 10, 22, 0,
 }
 var yyR1 = [...]int{
 
-	0, 1, 2, 2, 2, 4, 4, 3, 3, 5,
-	5,
+	0, 1, 2, 2, 2, 4, 4, 3, 3, 3,
+	5, 5,
 }
 var yyR2 = [...]int{
 
-	0, 4, 2, 3, 4, 1, 2, 3, 3, 2,
-	1,
+	0, 4, 2, 3, 4, 1, 2, 2, 3, 3,
+	2, 1,
 }
 var yyChk = [...]int{
 
 	-1000, -1, 11, 10, 10, -2, 8, 9, 7, 9,
-	-4, -3, 10, 9, -3, -5, -2, 10, 7, 7,
-	-5,
+	-4, -3, 10, 9, -3, 7, -5, -2, 10, 7,
+	7, -5,
 }
 var yyDef = [...]int{
 
 	0, -2, 0, 0, 0, 1, 0, 2, 0, 3,
-	0, 5, 0, 4, 6, 0, 0, 10, 7, 8,
-	9,
+	0, 5, 0, 4, 6, 7, 0, 0, 11, 8,
+	9, 10,
 }
 var yyTok1 = [...]int{
 
@@ -548,27 +548,33 @@ yydefault:
 			yyVAL.members = append(yyDollar[1].members, yyDollar[2].pair)
 		}
 	case 7:
-		yyDollar = yyS[yypt-3 : yypt+1]
+		yyDollar = yyS[yypt-2 : yypt+1]
 		//line parser.go.y:103
 		{
-			yyVAL.pair = &node{kind: keyNode, value: yyDollar[1].token.literal, children: []*node{yyDollar[2].value}}
+			yyVAL.pair = &node{kind: keyNode, value: yyDollar[1].token.literal, children: []*node{}}
 		}
 	case 8:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line parser.go.y:107
 		{
-			yyVAL.pair = &node{kind: keyNode, value: yyDollar[1].token.literal, children: []*node{yyDollar[2].object}}
+			yyVAL.pair = &node{kind: keyNode, value: yyDollar[1].token.literal, children: []*node{yyDollar[2].value}}
 		}
 	case 9:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line parser.go.y:111
+		{
+			yyVAL.pair = &node{kind: keyNode, value: yyDollar[1].token.literal, children: []*node{yyDollar[2].object}}
+		}
+	case 10:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line parser.go.y:113
+		//line parser.go.y:117
 		{
 			s := fmt.Sprintf("%s %s", yyDollar[1].token.literal, yyDollar[2].value.value)
 			yyVAL.value = &node{kind: scalarNode, value: s, children: []*node{}}
 		}
-	case 10:
+	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.go.y:118
+		//line parser.go.y:122
 		{
 			yyVAL.value = &node{kind: scalarNode, value: yyDollar[1].token.literal, children: []*node{}}
 		}

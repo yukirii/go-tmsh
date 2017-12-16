@@ -92,15 +92,17 @@ state 11
 
 
 state 12
+	pair:  IDENT.NEWLINE 
 	pair:  IDENT.value NEWLINE 
 	pair:  IDENT.object NEWLINE 
 
+	NEWLINE  shift 15
 	L_BRACE  shift 6
-	IDENT  shift 17
+	IDENT  shift 18
 	.  error
 
-	object  goto 16
-	value  goto 15
+	object  goto 17
+	value  goto 16
 
 state 13
 	object:  L_BRACE NEWLINE members R_BRACE.    (4)
@@ -115,55 +117,61 @@ state 14
 
 
 state 15
-	pair:  IDENT value.NEWLINE 
+	pair:  IDENT NEWLINE.    (7)
 
-	NEWLINE  shift 18
-	.  error
+	.  reduce 7 (src line 101)
 
 
 state 16
-	pair:  IDENT object.NEWLINE 
+	pair:  IDENT value.NEWLINE 
 
 	NEWLINE  shift 19
 	.  error
 
 
 state 17
-	value:  IDENT.value 
-	value:  IDENT.    (10)
+	pair:  IDENT object.NEWLINE 
 
-	IDENT  shift 17
-	.  reduce 10 (src line 117)
+	NEWLINE  shift 20
+	.  error
 
-	value  goto 20
 
 state 18
-	pair:  IDENT value NEWLINE.    (7)
+	value:  IDENT.value 
+	value:  IDENT.    (11)
 
-	.  reduce 7 (src line 101)
+	IDENT  shift 18
+	.  reduce 11 (src line 121)
 
+	value  goto 21
 
 state 19
-	pair:  IDENT object NEWLINE.    (8)
+	pair:  IDENT value NEWLINE.    (8)
 
 	.  reduce 8 (src line 106)
 
 
 state 20
-	value:  IDENT value.    (9)
+	pair:  IDENT object NEWLINE.    (9)
 
-	.  reduce 9 (src line 111)
+	.  reduce 9 (src line 110)
+
+
+state 21
+	value:  IDENT value.    (10)
+
+	.  reduce 10 (src line 115)
 
 
 11 terminals, 6 nonterminals
-11 grammar rules, 21/8000 states
+12 grammar rules, 22/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 55 working sets used
 memory: parser 8/120000
 6 extra closures
-15 shift entries, 1 exceptions
+16 shift entries, 1 exceptions
 8 goto entries
 0 entries saved by goto default
-Optimizer space used: output 23/120000
-23 table entries, 0 zero
-maximum spread: 11, maximum offset: 17
+Optimizer space used: output 24/120000
+24 table entries, 0 zero
+maximum spread: 11, maximum offset: 18

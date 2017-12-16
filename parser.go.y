@@ -89,17 +89,21 @@ object
 	}
 
 members
-  : pair
+	: pair
 	{
 		$$ = []*node{$1}
 	}
-  | members pair
+	| members pair
 	{
 		$$ = append($1, $2)
 	}
 
 pair
-  : IDENT value NEWLINE
+	: IDENT NEWLINE
+	{
+		$$ = &node{kind: keyNode, value: $1.literal, children: []*node{}}
+	}
+	| IDENT value NEWLINE
 	{
 		$$ = &node{kind: keyNode, value: $1.literal, children: []*node{$2}}
 	}
