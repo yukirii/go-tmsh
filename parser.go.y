@@ -17,7 +17,7 @@ const (
 type nodeType int
 
 type node struct {
-	kind    nodeType
+	kind     nodeType
 	value    string
 	children []*node
 }

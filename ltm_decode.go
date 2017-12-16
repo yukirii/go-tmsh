@@ -38,20 +38,29 @@ func unmarshal(n *node, out reflect.Value) {
 }
 
 func decodeStructNode(n *node, out reflect.Value) {
+	l := len(n.children)
+
 	switch out.Kind() {
 	case reflect.Struct:
 		for _, c := range n.children {
 			unmarshal(c, out)
 		}
 	case reflect.Slice:
-		l := len(n.children)
 		out.Set(reflect.MakeSlice(out.Type(), l, l))
-
 		et := out.Type().Elem()
 		for i := 0; i < l; i++ {
 			e := reflect.New(et).Elem()
 			unmarshal(n.children[i], e)
 			out.Index(i).Set(e)
+		}
+	case reflect.Map:
+		out.Set(reflect.MakeMap(out.Type()))
+		et := out.Type().Elem()
+		for i := 0; i < l; i++ {
+			k := reflect.ValueOf(n.children[i].value)
+			v := reflect.New(et).Elem()
+			unmarshal(n.children[i], v)
+			out.SetMapIndex(k, v)
 		}
 	}
 }

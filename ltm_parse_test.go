@@ -219,15 +219,20 @@ func TestParseShowLtmPool(t *testing.T) {
 }
 
 func TestParseListLtmVirtual(t *testing.T) {
-	//# list ltm virtual api.example.com_80
-	str := `ltm virtual api.example.com_80 {
-	destination 203.0.113.1:http
+	//# list ltm virtual api.example.com_443
+	str := `ltm virtual api.example.com_443 {
+	destination 203.0.113.1:https
 	ip-protocol tcp
 	mask 255.255.255.255
 	partition partition1
-	pool api.example.com_80
+	pool api.example.com_443
 	profiles {
-		/Common/tcp { }
+		/Common/tcp {
+			context all
+		}
+		wildcard.example.com {
+			context clientside
+		}
 	}
 	source 0.0.0.0/0
 	vs-index 1234
@@ -239,11 +244,15 @@ func TestParseListLtmVirtual(t *testing.T) {
 	}
 
 	expect := VirtualServer{
-		Destination: "203.0.113.1:http",
+		Destination: "203.0.113.1:https",
 		IpProtocol:  "tcp",
 		Mask:        "255.255.255.255",
 		Partition:   "partition1",
-		Pool:        "api.example.com_80",
+		Pool:        "api.example.com_443",
+		Profiles: map[string]Profile{
+			"/Common/tcp":          Profile{Context: "all"},
+			"wildcard.example.com": Profile{Context: "clientside"},
+		},
 	}
 
 	if !reflect.DeepEqual(vs, expect) {

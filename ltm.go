@@ -36,12 +36,17 @@ type PoolMember struct {
 }
 
 type VirtualServer struct {
-	Name        string `ltm:"name"`
-	Destination string `ltm:"destination"`
-	IpProtocol  string `ltm:"ip-protocol"`
-	Mask        string `ltm:"mask"`
-	Partition   string `ltm:"partition"`
-	Pool        string `ltm:"pool"`
+	Name        string             `ltm:"name"`
+	Destination string             `ltm:"destination"`
+	IpProtocol  string             `ltm:"ip-protocol"`
+	Mask        string             `ltm:"mask"`
+	Partition   string             `ltm:"partition"`
+	Pool        string             `ltm:"pool"`
+	Profiles    map[string]Profile `ltm:"profiles"`
+}
+
+type Profile struct {
+	Context string `ltm:"context"`
 }
 
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
