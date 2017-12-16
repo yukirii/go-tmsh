@@ -84,7 +84,6 @@ func decodeKeyNode(n *node, out reflect.Value) {
 }
 
 func decodeScalarNode(n *node, out reflect.Value) {
-
 	switch out.Kind() {
 	case reflect.Int:
 		i, _ := strconv.ParseInt(n.value, 10, 64)
