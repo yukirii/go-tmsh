@@ -5,51 +5,7 @@ import (
 	"testing"
 )
 
-func TestCurrentLine(t *testing.T) {
-	str := `line1
-line2
-line3
-line4`
-
-	fm := NewFieldManager(str)
-
-	actual := fm.CurrentLine()
-	expect := "line1"
-
-	if !reflect.DeepEqual(actual, expect) {
-		t.Errorf("got %v\nwant %v", actual, expect)
-	}
-
-	fm.currentLineNum += 2
-
-	actual = fm.CurrentLine()
-	expect = "line3"
-
-	if !reflect.DeepEqual(actual, expect) {
-		t.Errorf("got %v\nwant %v", actual, expect)
-	}
-}
-
-func TestAdvance(t *testing.T) {
-	str := `line1
-line2
-line3
-line4`
-
-	fm := NewFieldManager(str)
-	fm.Advance()
-	fm.Advance()
-	fm.Advance()
-
-	actual := fm.currentLineNum
-	expect := 3
-
-	if !reflect.DeepEqual(actual, expect) {
-		t.Errorf("got %v\nwant %v", actual, expect)
-	}
-}
-
-func TestParseShowLtmNode(t *testing.T) {
+func TestUnmarshalNode(t *testing.T) {
 	str := `ltm node dev-web01.example.com {
 	addr 192.0.2.1
 	cur-sessions 0
@@ -88,7 +44,7 @@ func TestParseShowLtmNode(t *testing.T) {
 	}
 }
 
-func TestParseShowLtmPool(t *testing.T) {
+func TestUnmarshalPool(t *testing.T) {
 	//# show ltm pool api.example.com_8080 members field-fmt
 	str := `ltm pool api.example.com_8080 {
     active-member-cnt 2
@@ -218,7 +174,7 @@ func TestParseShowLtmPool(t *testing.T) {
 	}
 }
 
-func TestParseListLtmVirtual(t *testing.T) {
+func TestUnmarshalVirtualServer(t *testing.T) {
 	//# list ltm virtual api.example.com_443
 	str := `ltm virtual api.example.com_443 {
 	destination 203.0.113.1:https
