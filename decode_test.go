@@ -5,74 +5,33 @@ import (
 	"testing"
 )
 
-func TestCurrentLine(t *testing.T) {
-	str := `line1
-line2
-line3
-line4`
-
-	fm := NewFieldManager(str)
-
-	actual := fm.CurrentLine()
-	expect := "line1"
-
-	if !reflect.DeepEqual(actual, expect) {
-		t.Errorf("got %v\nwant %v", actual, expect)
-	}
-
-	fm.currentLineNum += 2
-
-	actual = fm.CurrentLine()
-	expect = "line3"
-
-	if !reflect.DeepEqual(actual, expect) {
-		t.Errorf("got %v\nwant %v", actual, expect)
-	}
-}
-
-func TestAdvance(t *testing.T) {
-	str := `line1
-line2
-line3
-line4`
-
-	fm := NewFieldManager(str)
-	fm.Advance()
-	fm.Advance()
-	fm.Advance()
-
-	actual := fm.currentLineNum
-	expect := 3
-
-	if !reflect.DeepEqual(actual, expect) {
-		t.Errorf("got %v\nwant %v", actual, expect)
-	}
-}
-
-func TestParseShowLtmNode(t *testing.T) {
+func TestUnmarshalNode(t *testing.T) {
 	str := `ltm node dev-web01.example.com {
-    addr 192.0.2.1
-    cur-sessions 0
-    monitor-rule none
-    monitor-status unchecked
-    name dev-web01.example.com
-    serverside.bits-in 0
-    serverside.bits-out 0
-    serverside.cur-conns 0
-    serverside.max-conns 0
-    serverside.pkts-in 0
-    serverside.pkts-out 0
-    serverside.tot-conns 0
-    session-status enabled
-    status.availability-state unknown
-    status.enabled-state enabled
-    status.status-reason Node address does not have service checking enabled
-    tot-requests 0
+	addr 192.0.2.1
+	cur-sessions 0
+	monitor-rule none
+	monitor-status unchecked
+	name dev-web01.example.com
+	serverside.bits-in 0
+	serverside.bits-out 0
+	serverside.cur-conns 0
+	serverside.max-conns 0
+	serverside.pkts-in 0
+	serverside.pkts-out 0
+	serverside.tot-conns 0
+	session-status enabled
+	status.availability-state unknown
+	status.enabled-state enabled
+	status.status-reason Node address does not have service checking enabled
+	tot-requests 0
 }`
 
-	node := ParseShowLtmNode(str)
+	var node Node
+	if err := Unmarshal(str, &node); err != nil {
+		t.Errorf("got %v", err)
+	}
 
-	expect := &Node{
+	expect := Node{
 		Addr:          "192.0.2.1",
 		Name:          "dev-web01.example.com",
 		MonitorRule:   "none",
@@ -85,7 +44,7 @@ func TestParseShowLtmNode(t *testing.T) {
 	}
 }
 
-func TestParseShowLtmPool(t *testing.T) {
+func TestUnmarshalPool(t *testing.T) {
 	//# show ltm pool api.example.com_8080 members field-fmt
 	str := `ltm pool api.example.com_8080 {
     active-member-cnt 2
@@ -174,39 +133,40 @@ func TestParseShowLtmPool(t *testing.T) {
     tot-requests 0
 }`
 
-	pool := ParseShowLtmPool(str)
-
-	poolMembers := []PoolMember{
-		PoolMember{
-			Name:              "api01.example.com",
-			Addr:              "192.0.2.1",
-			Port:              8080,
-			MonitorRule:       "/Common/tcp (pool monitor)",
-			MonitorStatus:     "up",
-			EnabledState:      "enabled",
-			AvailabilityState: "available",
-			StatusReason:      "Pool member is available",
-		},
-		PoolMember{
-			Name:              "api02.example.com",
-			Addr:              "192.0.2.2",
-			Port:              8080,
-			MonitorRule:       "none",
-			MonitorStatus:     "unchecked",
-			EnabledState:      "disabled",
-			AvailabilityState: "unknown",
-			StatusReason:      "Pool member does not have service checking enabled",
-		},
+	var pool Pool
+	if err := Unmarshal(str, &pool); err != nil {
+		t.Errorf("got %v", err)
 	}
 
-	expect := &Pool{
+	expect := Pool{
 		ActiveMemberCount: 2,
 		MonitorRule:       "/Common/tcp",
 		Name:              "api.example.com_8080",
 		AvailabilityState: "available",
 		EnabledState:      "enabled",
 		StatusReason:      "The pool is available",
-		PoolMembers:       poolMembers,
+		PoolMembers: []PoolMember{
+			PoolMember{
+				Name:              "api01.example.com",
+				Addr:              "192.0.2.1",
+				Port:              8080,
+				MonitorRule:       "/Common/tcp (pool monitor)",
+				MonitorStatus:     "up",
+				EnabledState:      "enabled",
+				AvailabilityState: "available",
+				StatusReason:      "Pool member is available",
+			},
+			PoolMember{
+				Name:              "api02.example.com",
+				Addr:              "192.0.2.2",
+				Port:              8080,
+				MonitorRule:       "none",
+				MonitorStatus:     "unchecked",
+				EnabledState:      "disabled",
+				AvailabilityState: "unknown",
+				StatusReason:      "Pool member does not have service checking enabled",
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(pool, expect) {
@@ -214,29 +174,41 @@ func TestParseShowLtmPool(t *testing.T) {
 	}
 }
 
-func TestParseListLtmVirtual(t *testing.T) {
-	//# list ltm virtual api.example.com_80
-	str := `ltm virtual api.example.com_80 {
-    destination 203.0.113.1:http
-    ip-protocol tcp
-    mask 255.255.255.255
-    partition partition1
-    pool api.example.com_80
-    profiles {
-        /Common/tcp { }
-    }
-    source 0.0.0.0/0
-    vs-index 1234
+func TestUnmarshalVirtualServer(t *testing.T) {
+	//# list ltm virtual api.example.com_443
+	str := `ltm virtual api.example.com_443 {
+	destination 203.0.113.1:https
+	ip-protocol tcp
+	mask 255.255.255.255
+	partition partition1
+	pool api.example.com_443
+	profiles {
+		/Common/tcp {
+			context all
+		}
+		wildcard.example.com {
+			context clientside
+		}
+	}
+	source 0.0.0.0/0
+	vs-index 1234
 }`
 
-	vs := ParseListLtmVirtual(str)
+	var vs VirtualServer
+	if err := Unmarshal(str, &vs); err != nil {
+		t.Errorf("got %v", err)
+	}
 
-	expect := &VirtualServer{
-		Destination: "203.0.113.1:http",
+	expect := VirtualServer{
+		Destination: "203.0.113.1:https",
 		IpProtocol:  "tcp",
 		Mask:        "255.255.255.255",
 		Partition:   "partition1",
-		Pool:        "api.example.com_80",
+		Pool:        "api.example.com_443",
+		Profiles: map[string]Profile{
+			"/Common/tcp":          Profile{Context: "all"},
+			"wildcard.example.com": Profile{Context: "clientside"},
+		},
 	}
 
 	if !reflect.DeepEqual(vs, expect) {

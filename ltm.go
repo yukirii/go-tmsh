@@ -7,40 +7,46 @@ import (
 )
 
 type Node struct {
-	Name          string
-	Addr          string
-	MonitorRule   string
-	MonitorStatus string
-	EnabledState  string
+	Name          string `ltm:"name"`
+	Addr          string `ltm:"addr"`
+	MonitorRule   string `ltm:"monitor-rule"`
+	MonitorStatus string `ltm:"monitor-status"`
+	EnabledState  string `ltm:"status.enabled-state"`
 }
 
 type Pool struct {
-	ActiveMemberCount int
-	Name              string
-	MonitorRule       string
-	AvailabilityState string
-	EnabledState      string
-	StatusReason      string
-	PoolMembers       []PoolMember
+	ActiveMemberCount int          `ltm:"active-member-cnt"`
+	Name              string       `ltm:"name"`
+	MonitorRule       string       `ltm:"monitor-rule"`
+	AvailabilityState string       `ltm:"status.availability-state"`
+	EnabledState      string       `ltm:"status.enabled-state"`
+	StatusReason      string       `ltm:"status.status-reason"`
+	PoolMembers       []PoolMember `ltm:"members"`
 }
 
 type PoolMember struct {
-	Name              string
-	Addr              string
-	Port              int
-	MonitorRule       string
-	MonitorStatus     string
-	EnabledState      string
-	AvailabilityState string
-	StatusReason      string
+	Name              string `ltm:"node-name"`
+	Addr              string `ltm:"addr"`
+	Port              int    `ltm:"port"`
+	MonitorRule       string `ltm:"monitor-rule"`
+	MonitorStatus     string `ltm:"monitor-status"`
+	EnabledState      string `ltm:"status.enabled-state"`
+	AvailabilityState string `ltm:"status.availability-state"`
+	StatusReason      string `ltm:"status.status-reason"`
 }
 
 type VirtualServer struct {
-	Destination string
-	IpProtocol  string
-	Mask        string
-	Partition   string
-	Pool        string
+	Name        string             `ltm:"name"`
+	Destination string             `ltm:"destination"`
+	IpProtocol  string             `ltm:"ip-protocol"`
+	Mask        string             `ltm:"mask"`
+	Partition   string             `ltm:"partition"`
+	Pool        string             `ltm:"pool"`
+	Profiles    map[string]Profile `ltm:"profiles"`
+}
+
+type Profile struct {
+	Context string `ltm:"context"`
 }
 
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
@@ -48,8 +54,13 @@ func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	if strings.Contains(ret, "was not found.") {
 		return nil, fmt.Errorf(ret)
 	}
-	node := ParseShowLtmNode(ret)
-	return node, nil
+
+	var node Node
+	if err := Unmarshal(ret, &node); err != nil {
+		return nil, err
+	}
+
+	return &node, nil
 }
 
 func (bigip *BigIP) CreateNode(name, ipaddr string) error {
@@ -89,8 +100,13 @@ func (bigip *BigIP) GetPool(name string) (*Pool, error) {
 	if strings.Contains(ret, "was not found.") {
 		return nil, fmt.Errorf(ret)
 	}
-	pool := ParseShowLtmPool(ret)
-	return pool, nil
+
+	var pool Pool
+	if err := Unmarshal(ret, &pool); err != nil {
+		return nil, err
+	}
+
+	return &pool, nil
 }
 
 func (bigip *BigIP) CreatePool(name string) error {
@@ -162,9 +178,13 @@ func (bigip *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 	if strings.Contains(ret, "was not found.") {
 		return nil, fmt.Errorf(ret)
 	}
-	vs := ParseListLtmVirtual(ret)
-	return vs, nil
 
+	var vs VirtualServer
+	if err := Unmarshal(ret, &vs); err != nil {
+		return nil, err
+	}
+
+	return &vs, nil
 }
 
 func (bigip *BigIP) CreateVirtualServer(vsName, poolName, targetVIP, defaultProfileName string, targetPort int) error {
