@@ -3,11 +3,17 @@ package tmsh
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 )
 
 var validCmds = []string{
 	"show sys clock",
+	"show ltm node",
+	"show ltm pool",
+	"list ltm pool",
+	"list ltm virtual",
+	"list ltm profile",
 }
 
 type TestSSHConnection struct {
@@ -17,7 +23,7 @@ type TestSSHConnection struct {
 
 func (c *TestSSHConnection) Send(cmd string) (int, error) {
 	for _, vc := range validCmds {
-		if vc == cmd {
+		if strings.HasPrefix(cmd, vc) {
 			c.validCmd = true
 			return 0, nil
 		}
