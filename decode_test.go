@@ -204,6 +204,7 @@ func TestUnmarshalVirtualServer(t *testing.T) {
 	}
 
 	expect := VirtualServer{
+		Name:        "api.example.com_443",
 		Destination: "203.0.113.1:https",
 		IpProtocol:  "tcp",
 		Mask:        "255.255.255.255",

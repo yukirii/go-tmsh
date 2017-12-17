@@ -29,6 +29,11 @@ func unmarshal(n *node, out reflect.Value) {
 	switch n.kind {
 	case ltmNodeNode, ltmPoolNode, ltmVirtualNode:
 		unmarshal(n.children[0], out)
+		if f, ok := lookupField("name", out); ok {
+			if f.Kind() == reflect.String && f.String() == "" {
+				f.SetString(n.value)
+			}
+		}
 	case structNode:
 		decodeStructNode(n, out)
 	case keyNode:
