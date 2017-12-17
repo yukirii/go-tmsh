@@ -216,6 +216,7 @@ func TestGetVirtual(t *testing.T) {
 }`
 
 	expect := &VirtualServer{
+		Name:        "api.example.com_443",
 		Destination: "203.0.113.1:https",
 		IpProtocol:  "tcp",
 		Mask:        "255.255.255.255",
@@ -621,6 +622,7 @@ ltm virtual web.example.com_80 {
 
 	expect := []VirtualServer{
 		VirtualServer{
+			Name:        "api.example.com_443",
 			Destination: "203.0.113.1:https",
 			IpProtocol:  "tcp",
 			Mask:        "255.255.255.255",
@@ -633,6 +635,7 @@ ltm virtual web.example.com_80 {
 			},
 		},
 		VirtualServer{
+			Name:        "web.example.com_80",
 			Destination: "203.0.113.2:http",
 			IpProtocol:  "tcp",
 			Mask:        "255.255.255.255",
