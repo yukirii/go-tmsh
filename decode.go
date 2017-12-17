@@ -53,7 +53,9 @@ func decodeStructNode(n *node, out reflect.Value) {
 		et := out.Type().Elem()
 		for i := 0; i < l; i++ {
 			e := reflect.New(et).Elem()
-			unmarshal(n.children[i], e)
+			for _, c := range n.children[i].children {
+				unmarshal(c, e)
+			}
 			out.Index(i).Set(e)
 		}
 	case reflect.Map:
@@ -62,7 +64,9 @@ func decodeStructNode(n *node, out reflect.Value) {
 		for i := 0; i < l; i++ {
 			k := reflect.ValueOf(n.children[i].value)
 			v := reflect.New(et).Elem()
-			unmarshal(n.children[i], v)
+			for _, c := range n.children[i].children {
+				unmarshal(c, v)
+			}
 			out.SetMapIndex(k, v)
 		}
 	}
@@ -73,10 +77,6 @@ func decodeKeyNode(n *node, out reflect.Value) {
 	case reflect.Struct:
 		if f, ok := lookupField(n.value, out); ok {
 			unmarshal(n.children[0], f)
-		} else {
-			for _, c := range n.children {
-				unmarshal(c, out)
-			}
 		}
 	case reflect.String:
 		unmarshal(n.children[0], out)

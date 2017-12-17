@@ -3,42 +3,53 @@ package tmsh
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 )
 
-type TestSSHConn struct {
+var validCmds = []string{
+	"show sys clock",
+	"show ltm node",
+	"show ltm pool",
+	"list ltm pool",
+	"list ltm virtual",
+	"list ltm profile",
+}
+
+type TestSSHConnection struct {
 	validCmd bool
+	ret      []byte
 }
 
-func (conn *TestSSHConn) Send(cmd string) (int, error) {
-	conn.validCmd = (cmd == "show sys clock")
-	return 0, nil
-}
-
-func (conn *TestSSHConn) Recv(suffix string) ([]byte, error) {
-	var ret []byte
-	var err error
-
-	if conn.validCmd {
-		ret = []byte("Last login: Mon Jul  1 10:20:34 2017 from 192.0.2.10\nadmin.prd@(LB000)(cfg-sync In Sync)(/S1-green-P:Active)(/admin.prd)(tmos)#\nshow sys clock\n------------------------\nSys::Clock\n------------------------\nMon Jul 03 14:25:02 JST 2017\n\nn.prd)(tmos)# ve)(/admi\n")
-		err = nil
-	} else {
-		ret = nil
-		err = fmt.Errorf("Syntax Error: unexpected argument \"foo\"")
+func (c *TestSSHConnection) Send(cmd string) (int, error) {
+	for _, vc := range validCmds {
+		if strings.HasPrefix(cmd, vc) {
+			c.validCmd = true
+			return 0, nil
+		}
 	}
-
-	return ret, err
+	c.validCmd = false
+	return 1, nil
 }
 
-func (conn *TestSSHConn) Close() error {
+func (c *TestSSHConnection) Recv(suffix string) ([]byte, error) {
+	if !c.validCmd {
+		return nil, fmt.Errorf("Syntax Error: unexpected argument \"foo\"")
+	}
+	return c.ret, nil
+}
+
+func (c *TestSSHConnection) Close() error {
 	return nil
 }
 
 func TestExecuteCommand(t *testing.T) {
 	bigip := &BigIP{
-		host:    "example.com",
-		user:    "admin.prd",
-		sshconn: &TestSSHConn{},
+		host: "example.com",
+		user: "admin.prd",
+		sshconn: &TestSSHConnection{
+			ret: []byte("Last login: Mon Jul  1 10:20:34 2017 from 192.0.2.10\nadmin.prd@(LB000)(cfg-sync In Sync)(/S1-green-P:Active)(/admin.prd)(tmos)#\nshow sys clock\n------------------------\nSys::Clock\n------------------------\nMon Jul 03 14:25:02 JST 2017\n\nn.prd)(tmos)# ve)(/admi\n"),
+		},
 	}
 
 	expect := "------------------------\nSys::Clock\n------------------------\nMon Jul 03 14:25:02 JST 2017\n"
@@ -52,7 +63,11 @@ func TestExecuteCommand(t *testing.T) {
 	}
 
 	expectErr := fmt.Errorf("Syntax Error: unexpected argument \"foo\"")
-	_, actualErr := bigip.ExecuteCommand("show foo")
+	ret, actualErr := bigip.ExecuteCommand("show foo")
+
+	if ret != "" {
+		t.Errorf("got %v\nwant %v", ret, "")
+	}
 
 	if !reflect.DeepEqual(actualErr, expectErr) {
 		t.Errorf("got %v\nwant %v", actualErr, expectErr)
