@@ -3,6 +3,8 @@ package tmsh
 import (
 	"reflect"
 	"testing"
+
+	"github.com/k0kubun/pp"
 )
 
 func TestUnmarshalNode(t *testing.T) {
@@ -40,7 +42,8 @@ func TestUnmarshalNode(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(node, expect) {
-		t.Errorf("got %v\nwant %v", node, expect)
+		t.Errorf("got :" + pp.Sprint(node))
+		t.Errorf("want :" + pp.Sprint(expect))
 	}
 }
 
@@ -170,7 +173,8 @@ func TestUnmarshalPool(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(pool, expect) {
-		t.Errorf("\ngot %v\nwant %v", pool, expect)
+		t.Errorf("got :" + pp.Sprint(pool))
+		t.Errorf("want :" + pp.Sprint(expect))
 	}
 }
 
@@ -212,6 +216,7 @@ func TestUnmarshalVirtualServer(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(vs, expect) {
-		t.Errorf("\ngot %v\nwant %v", vs, expect)
+		t.Errorf("got :" + pp.Sprint(vs))
+		t.Errorf("want :" + pp.Sprint(expect))
 	}
 }
