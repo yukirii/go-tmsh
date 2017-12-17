@@ -13,16 +13,16 @@ type SSH interface {
 	Close() error
 }
 
-type SSHConn struct {
+type sshConn struct {
 	session *ssh.Session
 	stdin   io.WriteCloser
 	stdout  io.Reader
 	stderr  io.Reader
 }
 
-type KeyboardInteractive map[string]string
+type keyboardInteractive map[string]string
 
-func (ki KeyboardInteractive) Challenge(user, instruction string, questions []string, echos []bool) ([]string, error) {
+func (ki keyboardInteractive) Challenge(user, instruction string, questions []string, echos []bool) ([]string, error) {
 	var answers []string
 
 	for _, q := range questions {
@@ -32,7 +32,7 @@ func (ki KeyboardInteractive) Challenge(user, instruction string, questions []st
 	return answers, nil
 }
 
-func NewSSHConnection(addr, user, password string) (SSH, error) {
+func newSSHConnection(addr, user, password string) (SSH, error) {
 	session, err := newSSHSession(addr, user, password)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func NewSSHConnection(addr, user, password string) (SSH, error) {
 		return nil, err
 	}
 
-	return &SSHConn{
+	return &sshConn{
 		session: session,
 		stdin:   stdin,
 		stdout:  stdout,
@@ -79,7 +79,7 @@ func NewSSHConnection(addr, user, password string) (SSH, error) {
 }
 
 func newSSHSession(addr, user, password string) (*ssh.Session, error) {
-	answers := KeyboardInteractive(map[string]string{
+	answers := keyboardInteractive(map[string]string{
 		"Password: ": password,
 	})
 
@@ -107,11 +107,11 @@ func newSSHSession(addr, user, password string) (*ssh.Session, error) {
 	return session, nil
 }
 
-func (conn *SSHConn) Send(cmd string) (int, error) {
+func (conn *sshConn) Send(cmd string) (int, error) {
 	return conn.stdin.Write([]byte(cmd + "\n"))
 }
 
-func (conn *SSHConn) Recv(suffix string) ([]byte, error) {
+func (conn *sshConn) Recv(suffix string) ([]byte, error) {
 	var result bytes.Buffer
 	buff := make([]byte, 65535)
 	for {
@@ -127,6 +127,6 @@ func (conn *SSHConn) Recv(suffix string) ([]byte, error) {
 	return result.Bytes(), nil
 }
 
-func (conn *SSHConn) Close() error {
+func (conn *sshConn) Close() error {
 	return conn.session.Close()
 }

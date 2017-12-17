@@ -10,7 +10,7 @@ import (
 func Unmarshal(data string, out interface{}) error {
 	data = strings.Trim(data, "\n")
 
-	l := Lexer{s: NewScanner(data)}
+	l := Lexer{s: newScanner(data)}
 	if yyParse(&l) != 0 {
 		return fmt.Errorf("Parse error")
 	}

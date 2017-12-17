@@ -14,7 +14,7 @@ type BigIP struct {
 }
 
 func NewSession(host, port, user, password string) (*BigIP, error) {
-	sshconn, err := NewSSHConnection(host+":"+port, user, password)
+	sshconn, err := newSSHConnection(host+":"+port, user, password)
 	if err != nil {
 		return nil, err
 	}

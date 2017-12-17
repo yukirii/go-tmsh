@@ -5,13 +5,13 @@ import (
 	"strings"
 )
 
-type Scanner struct {
+type scanner struct {
 	r    *strings.Reader
 	line int
 }
 
-func NewScanner(data string) *Scanner {
-	return &Scanner{r: strings.NewReader(data)}
+func newScanner(data string) *scanner {
+	return &scanner{r: strings.NewReader(data)}
 }
 
 func isWhitespace(ch rune) bool {
@@ -28,7 +28,7 @@ func isDigit(ch rune) bool {
 	return (ch >= '0' && ch <= '9')
 }
 
-func (s *Scanner) read() rune {
+func (s *scanner) read() rune {
 	ch, _, err := s.r.ReadRune()
 	if err != nil {
 		return rune(0)
@@ -36,9 +36,9 @@ func (s *Scanner) read() rune {
 	return ch
 }
 
-func (s *Scanner) unread() { _ = s.r.UnreadRune() }
+func (s *scanner) unread() { _ = s.r.UnreadRune() }
 
-func (s *Scanner) Scan() (tok int, lit string) {
+func (s *scanner) Scan() (tok int, lit string) {
 	ch := s.read()
 
 	if isWhitespace(ch) {
@@ -64,7 +64,7 @@ func (s *Scanner) Scan() (tok int, lit string) {
 	return ILLEGAL, string(ch)
 }
 
-func (s *Scanner) scanWhitespace() (tok int, lit string) {
+func (s *scanner) scanWhitespace() (tok int, lit string) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -82,7 +82,7 @@ func (s *Scanner) scanWhitespace() (tok int, lit string) {
 	return WS, buf.String()
 }
 
-func (s *Scanner) scanIdent() (tok int, lit string) {
+func (s *scanner) scanIdent() (tok int, lit string) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 

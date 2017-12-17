@@ -126,7 +126,7 @@ value
 %%
 
 type Lexer struct {
-	s      *Scanner
+	s      *scanner
 	result *node
 }
 
