@@ -626,7 +626,11 @@ ltm virtual web.example.com_80 {
 			Mask:        "255.255.255.255",
 			Partition:   "partition1",
 			Pool:        "api.example.com_8080",
-			Profiles:    map[string]Profile{"/Common/tcp": Profile{Context: "all"}},
+			Profiles: map[string]Profile{
+				"/Common/tcp": Profile{
+					Context: "all",
+				},
+			},
 		},
 		VirtualServer{
 			Destination: "203.0.113.2:http",
@@ -634,7 +638,11 @@ ltm virtual web.example.com_80 {
 			Mask:        "255.255.255.255",
 			Partition:   "partition1",
 			Pool:        "web.example.com_80",
-			Profiles:    map[string]Profile{"/Common/tcp": Profile{Context: "all"}},
+			Profiles: map[string]Profile{
+				"/Common/tcp": Profile{
+					Context: "all",
+				},
+			},
 		},
 	}
 
