@@ -49,8 +49,35 @@ type Profile struct {
 	Context string `ltm:"context"`
 }
 
+func splitLtmOutput(str string) []string {
+	sep := "ltm"
+	strs := []string{}
+	for _, s := range strings.Split(str, sep) {
+		if s == "" {
+			continue
+		}
+		s = sep + s
+		strs = append(strs, s)
+	}
+	return strs
+}
+
 func (bigip *BigIP) GetAllNodes() ([]Node, error) {
-	return nil, nil
+	ret, err := bigip.ExecuteCommand("show ltm node field-fmt")
+	if err != nil {
+		return nil, err
+	}
+
+	var nodes []Node
+	for _, s := range splitLtmOutput(ret) {
+		var n Node
+		if err := Unmarshal(s, &n); err != nil {
+			return nil, err
+		}
+		nodes = append(nodes, n)
+	}
+
+	return nodes, nil
 }
 
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
@@ -100,7 +127,21 @@ func (bigip *BigIP) DisableNode(name string) error {
 }
 
 func (bigip *BigIP) GetAllPools() ([]Pool, error) {
-	return nil, nil
+	ret, err := bigip.ExecuteCommand("show ltm pool members field-fmt")
+	if err != nil {
+		return nil, err
+	}
+
+	var pools []Pool
+	for _, s := range splitLtmOutput(ret) {
+		var p Pool
+		if err := Unmarshal(s, &p); err != nil {
+			return nil, err
+		}
+		pools = append(pools, p)
+	}
+
+	return pools, nil
 }
 
 func (bigip *BigIP) GetPool(name string) (*Pool, error) {
@@ -182,7 +223,21 @@ func (bigip *BigIP) DisablePoolMember(poolName, nodeName string, port int) error
 }
 
 func (bigip *BigIP) GetAllVirtualServers() ([]VirtualServer, error) {
-	return nil, nil
+	ret, err := bigip.ExecuteCommand("list ltm virtual all-properties")
+	if err != nil {
+		return nil, err
+	}
+
+	var vss []VirtualServer
+	for _, s := range splitLtmOutput(ret) {
+		var vs VirtualServer
+		if err := Unmarshal(s, &vs); err != nil {
+			return nil, err
+		}
+		vss = append(vss, vs)
+	}
+
+	return vss, nil
 }
 
 func (bigip *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
