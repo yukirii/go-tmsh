@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// VirtualServer contains information about each virtual server
 type VirtualServer struct {
 	Name        string             `ltm:"name"`
 	Destination string             `ltm:"destination"`
@@ -20,6 +21,7 @@ type Profile struct {
 	Context string `ltm:"context"`
 }
 
+// GetAllVirtualServers returns a list of all virtual servers
 func (bigip *BigIP) GetAllVirtualServers() ([]VirtualServer, error) {
 	ret, err := bigip.ExecuteCommand("list ltm virtual all-properties")
 	if err != nil {
@@ -38,6 +40,7 @@ func (bigip *BigIP) GetAllVirtualServers() ([]VirtualServer, error) {
 	return vss, nil
 }
 
+// GetVirtualServer gets a virtual server by name. Rerutn nil if the virtual server does not found.
 func (bigip *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 	ret, _ := bigip.ExecuteCommand("list ltm virtual " + name)
 	if strings.Contains(ret, "was not found.") {
@@ -52,6 +55,7 @@ func (bigip *BigIP) GetVirtualServer(name string) (*VirtualServer, error) {
 	return &vs, nil
 }
 
+// CreateVirtualServer creates a virtual server.
 func (bigip *BigIP) CreateVirtualServer(vsName, poolName, targetVIP, defaultProfileName string, targetPort int) error {
 	destination := targetVIP + ":" + strconv.Itoa(targetPort)
 	cmd := "create ltm virtual " + vsName + " { destination " + destination + " ip-protocol tcp mask 255.255.255.255 pool " + poolName + " profiles add { " + defaultProfileName + " } }"
@@ -62,6 +66,7 @@ func (bigip *BigIP) CreateVirtualServer(vsName, poolName, targetVIP, defaultProf
 	return nil
 }
 
+// DeleteVirtualServer removes a virtual server.
 func (bigip *BigIP) DeleteVirtualServer(vsName string) error {
 	ret, _ := bigip.ExecuteCommand("delete ltm virtual " + vsName)
 	if ret != "" {
@@ -70,6 +75,7 @@ func (bigip *BigIP) DeleteVirtualServer(vsName string) error {
 	return nil
 }
 
+// AddVirtualServerProfile adds a profile to a virtual server.
 func (bigip *BigIP) AddVirtualServerProfile(vsName, profileName, context string) error {
 	cmd := "modify ltm virtual " + vsName + " profiles add { " + profileName + " { context " + context + " } }"
 	ret, _ := bigip.ExecuteCommand(cmd)
@@ -79,6 +85,7 @@ func (bigip *BigIP) AddVirtualServerProfile(vsName, profileName, context string)
 	return nil
 }
 
+// DeleteVirtualServerProfile removes a profile from a virtual server.
 func (bigip *BigIP) DeleteVirtualServerProfile(vsName, profileName, context string) error {
 	cmd := "modify ltm virtual " + vsName + " profiles delete { " + profileName + " }"
 	ret, _ := bigip.ExecuteCommand(cmd)
@@ -88,6 +95,7 @@ func (bigip *BigIP) DeleteVirtualServerProfile(vsName, profileName, context stri
 	return nil
 }
 
+// ApplyPolicyToVirtualServer applies a policy to a virtual server.
 func (bigip *BigIP) ApplyPolicyToVirtualServer(vsName, policyName string) error {
 	cmd := "modify ltm virtual " + vsName + " fw-enforced-policy " + policyName
 	ret, _ := bigip.ExecuteCommand(cmd)

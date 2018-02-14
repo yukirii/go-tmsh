@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Unmarshal parses the 'field-fmt' formatted data and stores the result in the value pointed to by out.
 func Unmarshal(data string, out interface{}) error {
 	data = strings.Trim(data, "\n")
 

@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Pool contains information about each Pool
 type Pool struct {
 	ActiveMemberCount int          `ltm:"active-member-cnt"`
 	Name              string       `ltm:"name"`
@@ -16,6 +17,7 @@ type Pool struct {
 	PoolMembers       []PoolMember `ltm:"members"`
 }
 
+// Pool contains information about each pool member in a pool
 type PoolMember struct {
 	Name              string `ltm:"node-name"`
 	Addr              string `ltm:"addr"`
@@ -27,6 +29,7 @@ type PoolMember struct {
 	StatusReason      string `ltm:"status.status-reason"`
 }
 
+// GetAllPools returns a list of all pools
 func (bigip *BigIP) GetAllPools() ([]Pool, error) {
 	ret, err := bigip.ExecuteCommand("show ltm pool members field-fmt")
 	if err != nil {
@@ -45,6 +48,7 @@ func (bigip *BigIP) GetAllPools() ([]Pool, error) {
 	return pools, nil
 }
 
+// GetPool gets a pool by name. Return nil if the pool does not exist.
 func (bigip *BigIP) GetPool(name string) (*Pool, error) {
 	ret, _ := bigip.ExecuteCommand("show ltm pool " + name + " members field-fmt")
 	if strings.Contains(ret, "was not found.") {
@@ -59,6 +63,7 @@ func (bigip *BigIP) GetPool(name string) (*Pool, error) {
 	return &pool, nil
 }
 
+// CreatePool creates a new pool.
 func (bigip *BigIP) CreatePool(name string) error {
 	ret, _ := bigip.ExecuteCommand("create ltm pool " + name)
 	if ret != "" {
@@ -67,6 +72,7 @@ func (bigip *BigIP) CreatePool(name string) error {
 	return nil
 }
 
+// DeletePool removes a pool.
 func (bigip *BigIP) DeletePool(name string) error {
 	ret, _ := bigip.ExecuteCommand("delete ltm pool " + name)
 	if ret != "" {
@@ -75,6 +81,7 @@ func (bigip *BigIP) DeletePool(name string) error {
 	return nil
 }
 
+// DeletePoolMember adds a monitor to pool.
 func (bigip *BigIP) AddMonitorToPool(poolName, monitorName string) error {
 	ret, _ := bigip.ExecuteCommand("modify ltm pool " + poolName + " monitor '" + monitorName + "'")
 	if ret != "" {
@@ -83,6 +90,7 @@ func (bigip *BigIP) AddMonitorToPool(poolName, monitorName string) error {
 	return nil
 }
 
+// DeletePoolMember adds a new pool member.
 func (bigip *BigIP) AddPoolMember(poolName, nodeName, monitorName string, port int) error {
 	member := nodeName + ":" + strconv.Itoa(port)
 	cmd := "modify ltm pool " + poolName + " members add { " + member + " } monitor '" + monitorName + "'"
@@ -93,6 +101,7 @@ func (bigip *BigIP) AddPoolMember(poolName, nodeName, monitorName string, port i
 	return nil
 }
 
+// DeletePoolMember removes a pool member.
 func (bigip *BigIP) DeletePoolMember(poolName, nodeName string, port int) error {
 	member := nodeName + ":" + strconv.Itoa(port)
 	cmd := "modify ltm pool " + poolName + " members delete { " + member + " }"
@@ -103,6 +112,7 @@ func (bigip *BigIP) DeletePoolMember(poolName, nodeName string, port int) error 
 	return nil
 }
 
+// EnablePoolMember changes the status of pool member to enable.
 func (bigip *BigIP) EnablePoolMember(poolName, nodeName string, port int) error {
 	member := nodeName + ":" + strconv.Itoa(port)
 	cmd := "modify ltm pool " + poolName + " members modify { " + member + " { session user-enabled } }"
@@ -113,6 +123,7 @@ func (bigip *BigIP) EnablePoolMember(poolName, nodeName string, port int) error 
 	return nil
 }
 
+// DisablePoolMember changes the status of pool member to disable.
 func (bigip *BigIP) DisablePoolMember(poolName, nodeName string, port int) error {
 	member := nodeName + ":" + strconv.Itoa(port)
 	cmd := "modify ltm pool " + poolName + " members modify { " + member + " { session user-disabled } }"

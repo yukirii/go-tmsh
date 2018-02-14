@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Node contains information about each node
 type Node struct {
 	Name          string `ltm:"name"`
 	Addr          string `ltm:"addr"`
@@ -13,6 +14,7 @@ type Node struct {
 	EnabledState  string `ltm:"status.enabled-state"`
 }
 
+// GetAllNodes returns a list of all nodes.
 func (bigip *BigIP) GetAllNodes() ([]Node, error) {
 	ret, err := bigip.ExecuteCommand("show ltm node field-fmt")
 	if err != nil {
@@ -31,6 +33,7 @@ func (bigip *BigIP) GetAllNodes() ([]Node, error) {
 	return nodes, nil
 }
 
+// GetNode gets a node by name. Return nil if the node does not exist.
 func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	ret, _ := bigip.ExecuteCommand("show ltm node " + name + " field-fmt")
 	if strings.Contains(ret, "was not found.") {
@@ -45,6 +48,7 @@ func (bigip *BigIP) GetNode(name string) (*Node, error) {
 	return &node, nil
 }
 
+// CreateNode creates a new node.
 func (bigip *BigIP) CreateNode(name, ipaddr string) error {
 	ret, _ := bigip.ExecuteCommand("create ltm node " + name + " address " + ipaddr)
 	if ret != "" {
@@ -53,6 +57,7 @@ func (bigip *BigIP) CreateNode(name, ipaddr string) error {
 	return nil
 }
 
+// DeleteNode removes a node.
 func (bigip *BigIP) DeleteNode(name string) error {
 	ret, _ := bigip.ExecuteCommand("delete ltm node " + name)
 	if ret != "" {
@@ -61,6 +66,7 @@ func (bigip *BigIP) DeleteNode(name string) error {
 	return nil
 }
 
+// EnableNode changes the status of a node to enable.
 func (bigip *BigIP) EnableNode(name string) error {
 	ret, _ := bigip.ExecuteCommand("modify ltm node " + name + " session user-enabled")
 	if ret != "" {
@@ -69,6 +75,7 @@ func (bigip *BigIP) EnableNode(name string) error {
 	return nil
 }
 
+// DisableNode changes the status of a node to disable.
 func (bigip *BigIP) DisableNode(name string) error {
 	ret, _ := bigip.ExecuteCommand("modify ltm node " + name + " session user-disabled")
 	if ret != "" {

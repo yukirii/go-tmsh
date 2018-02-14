@@ -7,12 +7,14 @@ import (
 	"strings"
 )
 
+// BigIP is a struct for session state
 type BigIP struct {
 	host    string
 	user    string
 	sshconn SSH
 }
 
+// NewSession sets up new SSH session to BIG-IP TMSH
 func NewSession(host, port, user, password string) (*BigIP, error) {
 	sshconn, err := newSSHConnection(host+":"+port, user, password)
 	if err != nil {
@@ -46,6 +48,7 @@ func NewSession(host, port, user, password string) (*BigIP, error) {
 	return bigip, nil
 }
 
+// ExecuteCommand is used to execute any TMSH commands
 func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 	promptSuffix := "# "
 
@@ -81,6 +84,7 @@ func (bigip *BigIP) ExecuteCommand(cmd string) (string, error) {
 	return strings.Join(lines, "\n"), nil
 }
 
+// Save is used to execute 'save /sys config' command
 func (bigip *BigIP) Save() error {
 	ret, err := bigip.ExecuteCommand("save /sys config current-partition")
 	if err != nil {
@@ -101,6 +105,7 @@ func (bigip *BigIP) Save() error {
 	return nil
 }
 
+// Close is used to close SSH session
 func (bigip *BigIP) Close() {
 	bigip.sshconn.Close()
 }
