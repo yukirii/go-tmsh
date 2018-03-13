@@ -3,8 +3,7 @@ package tmsh
 import (
 	"bytes"
 	"io"
-
-	"golang.org/x/crypto/ssh"
+    "golang.org/x/crypto/ssh"
 )
 
 type SSH interface {
@@ -32,8 +31,14 @@ func (ki keyboardInteractive) Challenge(user, instruction string, questions []st
 	return answers, nil
 }
 
-func newSSHConnection(addr, user, password string) (SSH, error) {
-	session, err := newSSHSession(addr, user, password)
+func newSSHConnection(addr, user, password string, key []byte) (SSH, error) {
+	var session *ssh.Session
+        var err error 
+        if len(password) > 0 {
+                session, err = newSSHSession(addr, user, password)
+        } else {
+                session, err = newSSHKeySession(addr, user, key)
+        } 
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +110,34 @@ func newSSHSession(addr, user, password string) (*ssh.Session, error) {
 	}
 
 	return session, nil
+}
+
+func newSSHKeySession(addr, user string, key []byte) (*ssh.Session, error) { 
+
+        signer, err := ssh.ParsePrivateKey(key)
+        if err != nil {
+                return nil, err
+        }
+
+        config := &ssh.ClientConfig{
+                User: user,
+                Auth: []ssh.AuthMethod {
+                       ssh.PublicKeys(signer),
+                },
+                HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+        }
+
+        conn, err := ssh.Dial("tcp", addr, config)
+        if err != nil {
+                return nil, err
+        }
+
+        session, err := conn.NewSession()
+        if err != nil {
+                return nil, err
+        }
+
+        return session, nil
 }
 
 func (conn *sshConn) Send(cmd string) (int, error) {
