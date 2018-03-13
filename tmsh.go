@@ -16,7 +16,7 @@ type BigIP struct {
 
 // NewKeySession is NewSession plus key handling
 func NewKeySession(host, port, user string, key []byte) (*BigIP, error) {
-       return NewSession(host, port, user, "", key)
+       return GenSession(host, port, user, "", key)
 }
 
 // NewSession sets up new SSH session to BIG-IP TMSH
