@@ -21,7 +21,7 @@ func NewKeySession(host, port, user string, key []byte) (*BigIP, error) {
 
 // NewSession sets up new SSH session to BIG-IP TMSH
 func NewSession(host, port, user, password string) (*BigIP, error) {
-	return GenSession(host,post,user,password,[]byte{})
+	return GenSession(host,port,user,password,[]byte{})
 }
 
 // GenSession handles either Password or SSH Key based..
