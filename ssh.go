@@ -13,6 +13,7 @@ type SSH interface {
 }
 
 type sshConn struct {
+	client  *ssh.Client
 	session *ssh.Session
 	stdin   io.WriteCloser
 	stdout  io.Reader
@@ -33,12 +34,15 @@ func (ki keyboardInteractive) Challenge(user, instruction string, questions []st
 
 func newSSHConnection(addr, user, password string, key []byte) (SSH, error) {
 	var session *ssh.Session
-        var err error 
-        if len(password) > 0 {
-                session, err = newSSHSession(addr, user, password)
-        } else {
-                session, err = newSSHKeySession(addr, user, key)
-        } 
+	var client  *shh.Client
+	
+	var err error 
+	if len(password) > 0 {
+		session, client, err = newSSHSession(addr, user, password)
+	} else {
+		session, client, err = newSSHKeySession(addr, user, key)
+	} 
+
 	if err != nil {
 		return nil, err
 	}
@@ -77,13 +81,14 @@ func newSSHConnection(addr, user, password string, key []byte) (SSH, error) {
 
 	return &sshConn{
 		session: session,
+		client:  client,
 		stdin:   stdin,
 		stdout:  stdout,
 		stderr:  stderr,
 	}, nil
 }
 
-func newSSHSession(addr, user, password string) (*ssh.Session, error) {
+func newSSHSession(addr, user, password string) (*ssh.Session, *ssh.Client, error) {
 	answers := keyboardInteractive(map[string]string{
 		"Password: ": password,
 	})
@@ -101,23 +106,23 @@ func newSSHSession(addr, user, password string) (*ssh.Session, error) {
 
 	conn, err := ssh.Dial("tcp", addr, config)
 	if err != nil {
-		return nil, err
+		return nil, nil,  err
 	}
 
 	session, err := conn.NewSession()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return session, nil
+	return session, conn, nil
 }
 
-func newSSHKeySession(addr, user string, key []byte) (*ssh.Session, error) { 
+func newSSHKeySession(addr, user string, key []byte) (*ssh.Session, *ssh.Client,  error) { 
 
         signer, err := ssh.ParsePrivateKey(key)
         if err != nil {
-                return nil, err
-        }
+                return nil, nil, err
+        } 
 
         config := &ssh.ClientConfig{
                 User: user,
@@ -129,15 +134,15 @@ func newSSHKeySession(addr, user string, key []byte) (*ssh.Session, error) {
 
         conn, err := ssh.Dial("tcp", addr, config)
         if err != nil {
-                return nil, err
+                return nil, nil, err
         }
 
         session, err := conn.NewSession()
         if err != nil {
-                return nil, err
+                return nil, nil, err
         }
 
-        return session, nil
+        return session, conn, nil
 }
 
 func (conn *sshConn) Send(cmd string) (int, error) {
@@ -161,5 +166,9 @@ func (conn *sshConn) Recv(suffix string) ([]byte, error) {
 }
 
 func (conn *sshConn) Close() error {
+	err := conn.client.Close()
+	if err != nil {
+		return err
+	}
 	return conn.session.Close()
 }
