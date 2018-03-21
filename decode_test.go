@@ -178,6 +178,60 @@ func TestUnmarshalPool(t *testing.T) {
 	}
 }
 
+// When a pool is newly created, the TMSH does not return a status.status-reason value
+// See: https://github.com/shiftky/go-tmsh/issues/17
+func TestUnmarshalEmptyStatusReasonPool(t *testing.T) {
+	//# show ltm pool api.example.com_8080 members field-fmt
+	str := `ltm pool api.example.com_8080 {
+    active-member-cnt 0
+    connq-all.age-edm 0
+    connq-all.age-ema 0
+    connq-all.age-head 0
+    connq-all.age-max 0
+    connq-all.depth 0
+    connq-all.serviced 0
+    connq.age-edm 0
+    connq.age-ema 0
+    connq.age-head 0
+    connq.age-max 0
+    connq.depth 0
+    connq.serviced 0
+    cur-sessions 0
+    min-active-members 0
+    monitor-rule none
+    name api.example.com_8080
+    serverside.bits-in 0
+    serverside.bits-out 0
+    serverside.cur-conns 0
+    serverside.max-conns 0
+    serverside.pkts-in 0
+    serverside.pkts-out 0
+    serverside.tot-conns 0
+    status.availability-state offline
+    status.enabled-state enabled
+    status.status-reason
+    tot-requests 0
+}`
+
+	var pool Pool
+	if err := Unmarshal(str, &pool); err != nil {
+		t.Errorf("got %v", err)
+	}
+
+	expect := Pool{
+		ActiveMemberCount: 0,
+		Name:              "api.example.com_8080",
+		MonitorRule:       "none",
+		AvailabilityState: "offline",
+		EnabledState:      "enabled",
+	}
+
+	if !reflect.DeepEqual(pool, expect) {
+		t.Errorf("got :" + pp.Sprint(pool))
+		t.Errorf("want :" + pp.Sprint(expect))
+	}
+}
+
 func TestUnmarshalVirtualServer(t *testing.T) {
 	//# list ltm virtual api.example.com_443
 	str := `ltm virtual api.example.com_443 {
