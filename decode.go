@@ -86,8 +86,6 @@ func decodeKeyNode(n *node, out reflect.Value) {
 				unmarshal(n.children[0], f)
 			}
 		}
-	case reflect.String:
-		unmarshal(n.children[0], out)
 	}
 }
 
