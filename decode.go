@@ -82,10 +82,10 @@ func decodeKeyNode(n *node, out reflect.Value) {
 	switch out.Kind() {
 	case reflect.Struct:
 		if f, ok := lookupField(n.value, out); ok {
-			unmarshal(n.children[0], f)
+			if len(n.children) > 0 {
+				unmarshal(n.children[0], f)
+			}
 		}
-	case reflect.String:
-		unmarshal(n.children[0], out)
 	}
 }
 
