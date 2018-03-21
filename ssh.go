@@ -34,7 +34,7 @@ func (ki keyboardInteractive) Challenge(user, instruction string, questions []st
 
 func newSSHConnection(addr, user, password string, key []byte) (SSH, error) {
 	var session *ssh.Session
-	var client  *shh.Client
+	var client  *ssh.Client
 	
 	var err error 
 	if len(password) > 0 {
