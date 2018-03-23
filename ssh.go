@@ -3,7 +3,8 @@ package tmsh
 import (
 	"bytes"
 	"io"
-    "golang.org/x/crypto/ssh"
+
+	"golang.org/x/crypto/ssh"
 )
 
 type SSH interface {
@@ -34,14 +35,14 @@ func (ki keyboardInteractive) Challenge(user, instruction string, questions []st
 
 func newSSHConnection(addr, user, password string, key []byte) (SSH, error) {
 	var session *ssh.Session
-	var client  *ssh.Client
-	
-	var err error 
+	var client *ssh.Client
+
+	var err error
 	if len(password) > 0 {
 		session, client, err = newSSHSession(addr, user, password)
 	} else {
 		session, client, err = newSSHKeySession(addr, user, key)
-	} 
+	}
 
 	if err != nil {
 		return nil, err
@@ -106,7 +107,7 @@ func newSSHSession(addr, user, password string) (*ssh.Session, *ssh.Client, erro
 
 	conn, err := ssh.Dial("tcp", addr, config)
 	if err != nil {
-		return nil, nil,  err
+		return nil, nil, err
 	}
 
 	session, err := conn.NewSession()
@@ -117,32 +118,32 @@ func newSSHSession(addr, user, password string) (*ssh.Session, *ssh.Client, erro
 	return session, conn, nil
 }
 
-func newSSHKeySession(addr, user string, key []byte) (*ssh.Session, *ssh.Client,  error) { 
+func newSSHKeySession(addr, user string, key []byte) (*ssh.Session, *ssh.Client, error) {
 
-        signer, err := ssh.ParsePrivateKey(key)
-        if err != nil {
-                return nil, nil, err
-        } 
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return nil, nil, err
+	}
 
-        config := &ssh.ClientConfig{
-                User: user,
-                Auth: []ssh.AuthMethod {
-                       ssh.PublicKeys(signer),
-                },
-                HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-        }
+	config := &ssh.ClientConfig{
+		User: user,
+		Auth: []ssh.AuthMethod{
+			ssh.PublicKeys(signer),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
 
-        conn, err := ssh.Dial("tcp", addr, config)
-        if err != nil {
-                return nil, nil, err
-        }
+	conn, err := ssh.Dial("tcp", addr, config)
+	if err != nil {
+		return nil, nil, err
+	}
 
-        session, err := conn.NewSession()
-        if err != nil {
-                return nil, nil, err
-        }
+	session, err := conn.NewSession()
+	if err != nil {
+		return nil, nil, err
+	}
 
-        return session, conn, nil
+	return session, conn, nil
 }
 
 func (conn *sshConn) Send(cmd string) (int, error) {
