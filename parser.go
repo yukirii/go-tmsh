@@ -70,7 +70,6 @@ const yyErrCode = 2
 const yyInitialStackSize = 16
 
 //line parser.go.y:126
-
 type Lexer struct {
 	s      *scanner
 	result *node
