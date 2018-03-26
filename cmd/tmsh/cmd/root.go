@@ -52,6 +52,7 @@ func init() {
 	RootCmd.PersistentFlags().StringP("password", "p", "", "TMSH SSH passsord [$TMSH_PASSWORD]")
 	RootCmd.PersistentFlags().StringP("host", "H", "", "TMSH SSH host [$TMSH_HOST]")
 	RootCmd.PersistentFlags().StringP("port", "P", "22", "TMSH SSH port [$TMSH_PORT]")
+	RootCmd.PersistentFlags().StringP("identity_file", "i", "", "TMSH SSH identity file (private key) [$TMSH_IDENTITY_FILE]")
 
 	flags := RootCmd.PersistentFlags()
 
@@ -60,6 +61,7 @@ func init() {
 	viper.BindPFlag("TMSH_PASSWORD", flags.Lookup("password"))
 	viper.BindPFlag("TMSH_HOST", flags.Lookup("host"))
 	viper.BindPFlag("TMSH_PORT", flags.Lookup("port"))
+	viper.BindPFlag("TMSH_IDENTITY_FILE", flags.Lookup("identity_file"))
 
 	RootCmd.AddCommand(versionCmd)
 	RootCmd.AddCommand(execCmd)
