@@ -48,17 +48,18 @@ var execCmd = &cobra.Command{
 func init() {
 	cobra.OnInitialize()
 
-	RootCmdFlags := RootCmd.Flags()
-	RootCmdFlags.StringP("user", "u", "", "TMSH SSH username [$TMSH_USER]")
-	RootCmdFlags.StringP("password", "p", "", "TMSH SSH passsord [$TMSH_PASSWORD]")
-	RootCmdFlags.StringP("host", "H", "", "TMSH SSH host [$TMSH_HOST]")
-	RootCmdFlags.StringP("port", "P", "22", "TMSH SSH port [$TMSH_PORT]")
+	RootCmd.PersistentFlags().StringP("user", "u", "", "TMSH SSH username [$TMSH_USER]")
+	RootCmd.PersistentFlags().StringP("password", "p", "", "TMSH SSH passsord [$TMSH_PASSWORD]")
+	RootCmd.PersistentFlags().StringP("host", "H", "", "TMSH SSH host [$TMSH_HOST]")
+	RootCmd.PersistentFlags().StringP("port", "P", "22", "TMSH SSH port [$TMSH_PORT]")
+
+	flags := RootCmd.PersistentFlags()
 
 	viper.AutomaticEnv()
-	viper.BindPFlag("TMSH_USER", RootCmdFlags.Lookup("user"))
-	viper.BindPFlag("TMSH_PASSWORD", RootCmdFlags.Lookup("password"))
-	viper.BindPFlag("TMSH_HOST", RootCmdFlags.Lookup("host"))
-	viper.BindPFlag("TMSH_PORT", RootCmdFlags.Lookup("port"))
+	viper.BindPFlag("TMSH_USER", flags.Lookup("user"))
+	viper.BindPFlag("TMSH_PASSWORD", flags.Lookup("password"))
+	viper.BindPFlag("TMSH_HOST", flags.Lookup("host"))
+	viper.BindPFlag("TMSH_PORT", flags.Lookup("port"))
 
 	RootCmd.AddCommand(versionCmd)
 	RootCmd.AddCommand(execCmd)
