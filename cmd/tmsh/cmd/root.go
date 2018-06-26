@@ -8,6 +8,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	version string
+)
+
 var RootCmd = &cobra.Command{
 	Use: "tmsh",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -19,7 +23,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number of tmsh-cli command.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("tmsh v0.2.0")
+		fmt.Printf("tmsh %s\n", version)
 	},
 }
 
