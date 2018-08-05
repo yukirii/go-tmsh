@@ -29,7 +29,18 @@ func Unmarshal(data string, out interface{}) error {
 func unmarshal(n *node, out reflect.Value) {
 	switch n.kind {
 	case ltmNodeNode, ltmPoolNode, ltmVirtualNode:
+		// Store LTM components info into embedded struct
+		for i := 0; i < out.NumField(); i++ {
+			fieldValue := out.Field(i)
+			if fieldValue.Kind() == reflect.Struct {
+				unmarshal(n.children[0], fieldValue)
+			}
+		}
+
+		// Store LTM components info into each struct fields
 		unmarshal(n.children[0], out)
+
+		// Set name field
 		if f, ok := lookupField("name", out); ok {
 			if f.Kind() == reflect.String && f.String() == "" {
 				f.SetString(n.value)
@@ -99,12 +110,11 @@ func decodeScalarNode(n *node, out reflect.Value) {
 	}
 }
 
-func lookupField(t string, v reflect.Value) (reflect.Value, bool) {
+func lookupField(tag string, v reflect.Value) (reflect.Value, bool) {
 	typ := v.Type()
 	for i := 0; i < v.NumField(); i++ {
 		fi := typ.Field(i)
-		tagv := fi.Tag.Get("ltm")
-		if tagv == t {
+		if fi.Tag.Get("ltm") == tag {
 			return v.Field(i), true
 		}
 	}
