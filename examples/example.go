@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/shiftky/go-tmsh"
+	"github.com/yukirii/go-tmsh"
 )
 
 func main() {
