@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/shiftky/go-tmsh"
 	"github.com/spf13/cobra"
+	"github.com/yukirii/go-tmsh"
 )
 
 func showPoolInfo(pool *tmsh.Pool) {

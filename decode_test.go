@@ -231,7 +231,7 @@ func TestUnmarshalPool(t *testing.T) {
 }
 
 // When a pool is newly created, the TMSH does not return a status.status-reason value
-// See: https://github.com/shiftky/go-tmsh/issues/17
+// See: https://github.com/yukirii/go-tmsh/issues/17
 func TestUnmarshalEmptyStatusReasonPool(t *testing.T) {
 	//# show ltm pool api.example.com_8080 members field-fmt
 	str := `ltm pool api.example.com_8080 {

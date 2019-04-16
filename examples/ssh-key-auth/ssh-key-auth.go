@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/shiftky/go-tmsh"
+	"github.com/yukirii/go-tmsh"
 )
 
 // SSH Key-Based Authentication
