@@ -81,7 +81,7 @@ func (bigip *BigIP) DeletePool(name string) error {
 	return nil
 }
 
-// DeletePoolMember adds a monitor to pool.
+// AddMonitorToPool adds a monitor to pool.
 func (bigip *BigIP) AddMonitorToPool(poolName, monitorName string) error {
 	ret, _ := bigip.ExecuteCommand("modify ltm pool " + poolName + " monitor '" + monitorName + "'")
 	if ret != "" {
@@ -90,10 +90,10 @@ func (bigip *BigIP) AddMonitorToPool(poolName, monitorName string) error {
 	return nil
 }
 
-// DeletePoolMember adds a new pool member.
-func (bigip *BigIP) AddPoolMember(poolName, nodeName, monitorName string, port int) error {
+// AddPoolMember adds a new pool member.
+func (bigip *BigIP) AddPoolMember(poolName, nodeName, monitorName string, port int, priority int) error {
 	member := nodeName + ":" + strconv.Itoa(port)
-	cmd := "modify ltm pool " + poolName + " members add { " + member + " } monitor '" + monitorName + "'"
+	cmd := "modify ltm pool " + poolName + " members add { " + member + " { priority-group " + strconv.Itoa(priority) + " } } monitor '" + monitorName + "'"
 	ret, _ := bigip.ExecuteCommand(cmd)
 	if ret != "" {
 		return fmt.Errorf(ret)
