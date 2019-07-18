@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/shiftky/go-tmsh"
 	"github.com/spf13/viper"
+	"github.com/yukirii/go-tmsh"
 )
 
 func NewSession() *tmsh.BigIP {

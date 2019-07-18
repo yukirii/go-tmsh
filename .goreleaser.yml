@@ -6,3 +6,5 @@ builds:
       - linux
     goarch:
       - amd64
+    ldflags:
+      - -s -w -X "github.com/shiftky/go-tmsh/cmd/tmsh/cmd.version={{.Version}}"

@@ -47,6 +47,58 @@ func TestUnmarshalNode(t *testing.T) {
 	}
 }
 
+type NodeExt struct {
+	Node
+	AvailabilityState string `ltm:"status.availability-state"`
+	StatusReason      string `ltm:"status.status-reason"`
+	TotRequests       int    `ltm:"tot-requests"`
+}
+
+func TestUnmarshalNodeExt(t *testing.T) {
+	str := `ltm node dev-web01.example.com {
+	addr 192.0.2.1
+	cur-sessions 0
+	monitor-rule none
+	monitor-status unchecked
+	name dev-web01.example.com
+	serverside.bits-in 0
+	serverside.bits-out 0
+	serverside.cur-conns 0
+	serverside.max-conns 0
+	serverside.pkts-in 0
+	serverside.pkts-out 0
+	serverside.tot-conns 0
+	session-status enabled
+	status.availability-state unknown
+	status.enabled-state enabled
+	status.status-reason Node address does not have service checking enabled
+	tot-requests 0
+}`
+
+	var nodeExt NodeExt
+	if err := Unmarshal(str, &nodeExt); err != nil {
+		t.Errorf("got %v", err)
+	}
+
+	expect := NodeExt{
+		Node: Node{
+			Addr:          "192.0.2.1",
+			Name:          "dev-web01.example.com",
+			MonitorRule:   "none",
+			MonitorStatus: "unchecked",
+			EnabledState:  "enabled",
+		},
+		AvailabilityState: "unknown",
+		StatusReason:      "Node address does not have service checking enabled",
+		TotRequests:       0,
+	}
+
+	if !reflect.DeepEqual(nodeExt, expect) {
+		t.Errorf("got :" + pp.Sprint(nodeExt))
+		t.Errorf("want :" + pp.Sprint(expect))
+	}
+}
+
 func TestUnmarshalPool(t *testing.T) {
 	//# show ltm pool api.example.com_8080 members field-fmt
 	str := `ltm pool api.example.com_8080 {
@@ -179,7 +231,7 @@ func TestUnmarshalPool(t *testing.T) {
 }
 
 // When a pool is newly created, the TMSH does not return a status.status-reason value
-// See: https://github.com/shiftky/go-tmsh/issues/17
+// See: https://github.com/yukirii/go-tmsh/issues/17
 func TestUnmarshalEmptyStatusReasonPool(t *testing.T) {
 	//# show ltm pool api.example.com_8080 members field-fmt
 	str := `ltm pool api.example.com_8080 {
