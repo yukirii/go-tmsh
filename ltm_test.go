@@ -222,9 +222,9 @@ func TestGetVirtual(t *testing.T) {
 		Mask:        "255.255.255.255",
 		Partition:   "partition1",
 		Pool:        "api.example.com_443",
-		Profiles: map[string]Profile{
-			"/Common/tcp":          Profile{Context: "all"},
-			"wildcard.example.com": Profile{Context: "clientside"},
+		Profiles: map[string]map[string]string{
+			"/Common/tcp":          map[string]string{"context": "all"},
+			"wildcard.example.com": map[string]string{"context": "clientside"},
 		},
 	}
 
@@ -628,9 +628,9 @@ ltm virtual web.example.com_80 {
 			Mask:        "255.255.255.255",
 			Partition:   "partition1",
 			Pool:        "api.example.com_8080",
-			Profiles: map[string]Profile{
-				"/Common/tcp": Profile{
-					Context: "all",
+			Profiles: map[string]map[string]string{
+				"/Common/tcp": map[string]string{
+					"context": "all",
 				},
 			},
 		},
@@ -641,9 +641,9 @@ ltm virtual web.example.com_80 {
 			Mask:        "255.255.255.255",
 			Partition:   "partition1",
 			Pool:        "web.example.com_80",
-			Profiles: map[string]Profile{
-				"/Common/tcp": Profile{
-					Context: "all",
+			Profiles: map[string]map[string]string{
+				"/Common/tcp": map[string]string{
+					"context": "all",
 				},
 			},
 		},

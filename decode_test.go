@@ -316,14 +316,61 @@ func TestUnmarshalVirtualServer(t *testing.T) {
 		Mask:        "255.255.255.255",
 		Partition:   "partition1",
 		Pool:        "api.example.com_443",
-		Profiles: map[string]Profile{
-			"/Common/tcp":          Profile{Context: "all"},
-			"wildcard.example.com": Profile{Context: "clientside"},
+		Profiles: map[string]map[string]string{
+			"/Common/tcp":          map[string]string{"context": "all"},
+			"wildcard.example.com": map[string]string{"context": "clientside"},
 		},
 	}
 
 	if !reflect.DeepEqual(vs, expect) {
 		t.Errorf("got :" + pp.Sprint(vs))
+		t.Errorf("want :" + pp.Sprint(expect))
+	}
+}
+
+func TestUnmarshalClientSSLProfile(t *testing.T) {
+	// list ltm profile client-ssl wildcard.example.com_20191031-1
+	str := `ltm profile client-ssl wildcard.example.com_20191031-1 {
+    app-service none
+    cert wildcard.example.com_20191031-1.crt
+    cert-key-chain {
+        wildcard.example.com_20191031-1 {
+            cert wildcard.example.com_20191031-1.crt
+            chain /Common/PUBCAG3_20191031-1.crt
+            key wildcard.example.com_20191031-1.key
+        }
+    }
+    chain /Common/PUBCAG3_20191031-1.crt
+    defaults-from /Common/clientssl_v2
+    inherit-certkeychain false
+    key wildcard.example.com_20191031-1.key
+    passphrase "****"
+}`
+
+	var p ClientSSLProfile
+	if err := Unmarshal(str, &p); err != nil {
+		t.Errorf("got %v", err)
+	}
+
+	expect := ClientSSLProfile{
+		Name:      "wildcard.example.com_20191031-1",
+		Component: "profile-client-ssl",
+		Cert:      "wildcard.example.com_20191031-1.crt",
+		CertKeyChain: map[string]map[string]string{
+			"wildcard.example.com_20191031-1": map[string]string{
+				"cert":  "wildcard.example.com_20191031-1.crt",
+				"chain": "/Common/PUBCAG3_20191031-1.crt",
+				"key":   "wildcard.example.com_20191031-1.key",
+			},
+		},
+		Chain:               "/Common/PUBCAG3_20191031-1.crt",
+		DefaultsFrom:        "/Common/clientssl_v2",
+		InheritCertkeychain: false,
+		Key:                 "wildcard.example.com_20191031-1.key",
+	}
+
+	if !reflect.DeepEqual(p, expect) {
+		t.Errorf("got :" + pp.Sprint(p))
 		t.Errorf("want :" + pp.Sprint(expect))
 	}
 }

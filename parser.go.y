@@ -6,9 +6,7 @@ import (
 )
 
 const (
-	ltmNodeNode = iota
-	ltmPoolNode
-	ltmVirtualNode
+	ltmNode = iota
 	keyNode
 	structNode
 	scalarNode
@@ -17,9 +15,10 @@ const (
 type nodeType int
 
 type node struct {
-	kind     nodeType
-	value    string
-	children []*node
+	kind      nodeType
+	component string
+	value     string
+	children  []*node
 }
 
 type Token struct {
@@ -58,19 +57,20 @@ type Token struct {
 ltm
 	: LTM IDENT IDENT object
 	{
-		var kind nodeType
-		switch $2.literal {
-		case "node":
-			kind = ltmNodeNode
-		case "pool":
-			kind = ltmPoolNode
-		case "virtual":
-			kind = ltmVirtualNode
-		}
 		yylex.(*Lexer).result = &node{
-			kind: kind,
+			kind: ltmNode,
+			component: $2.literal,
 			value: $3.literal,
 			children: []*node{$4},
+		}
+	}
+	| LTM IDENT IDENT IDENT object
+	{
+		yylex.(*Lexer).result = &node{
+			kind: ltmNode,
+			component: fmt.Sprintf("%s-%s", $2.literal, $3.literal),
+			value: $4.literal,
+			children: []*node{$5},
 		}
 	}
 

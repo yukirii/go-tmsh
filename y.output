@@ -16,6 +16,7 @@ state 1
 
 state 2
 	ltm:  LTM.IDENT IDENT object 
+	ltm:  LTM.IDENT IDENT IDENT object 
 
 	IDENT  shift 3
 	.  error
@@ -23,6 +24,7 @@ state 2
 
 state 3
 	ltm:  LTM IDENT.IDENT object 
+	ltm:  LTM IDENT.IDENT IDENT object 
 
 	IDENT  shift 4
 	.  error
@@ -30,8 +32,10 @@ state 3
 
 state 4
 	ltm:  LTM IDENT IDENT.object 
+	ltm:  LTM IDENT IDENT.IDENT object 
 
-	L_BRACE  shift 6
+	L_BRACE  shift 7
+	IDENT  shift 6
 	.  error
 
 	object  goto 5
@@ -39,139 +43,153 @@ state 4
 state 5
 	ltm:  LTM IDENT IDENT object.    (1)
 
-	.  reduce 1 (src line 58)
+	.  reduce 1 (src line 57)
 
 
 state 6
+	ltm:  LTM IDENT IDENT IDENT.object 
+
+	L_BRACE  shift 7
+	.  error
+
+	object  goto 8
+
+state 7
 	object:  L_BRACE.R_BRACE 
 	object:  L_BRACE.NEWLINE R_BRACE 
 	object:  L_BRACE.NEWLINE members R_BRACE 
 
-	NEWLINE  shift 8
-	R_BRACE  shift 7
+	NEWLINE  shift 10
+	R_BRACE  shift 9
 	.  error
-
-
-state 7
-	object:  L_BRACE R_BRACE.    (2)
-
-	.  reduce 2 (src line 77)
 
 
 state 8
-	object:  L_BRACE NEWLINE.R_BRACE 
-	object:  L_BRACE NEWLINE.members R_BRACE 
+	ltm:  LTM IDENT IDENT IDENT object.    (2)
 
-	R_BRACE  shift 9
-	IDENT  shift 12
-	.  error
+	.  reduce 2 (src line 67)
 
-	pair  goto 11
-	members  goto 10
 
 state 9
-	object:  L_BRACE NEWLINE R_BRACE.    (3)
+	object:  L_BRACE R_BRACE.    (3)
 
-	.  reduce 3 (src line 82)
+	.  reduce 3 (src line 77)
 
 
 state 10
-	object:  L_BRACE NEWLINE members.R_BRACE 
-	members:  members.pair 
+	object:  L_BRACE NEWLINE.R_BRACE 
+	object:  L_BRACE NEWLINE.members R_BRACE 
 
-	R_BRACE  shift 13
-	IDENT  shift 12
+	R_BRACE  shift 11
+	IDENT  shift 14
 	.  error
 
-	pair  goto 14
+	pair  goto 13
+	members  goto 12
 
 state 11
-	members:  pair.    (5)
+	object:  L_BRACE NEWLINE R_BRACE.    (4)
 
-	.  reduce 5 (src line 91)
+	.  reduce 4 (src line 82)
 
 
 state 12
+	object:  L_BRACE NEWLINE members.R_BRACE 
+	members:  members.pair 
+
+	R_BRACE  shift 15
+	IDENT  shift 14
+	.  error
+
+	pair  goto 16
+
+state 13
+	members:  pair.    (6)
+
+	.  reduce 6 (src line 91)
+
+
+state 14
 	pair:  IDENT.NEWLINE 
 	pair:  IDENT.value NEWLINE 
 	pair:  IDENT.object NEWLINE 
 
-	NEWLINE  shift 15
-	L_BRACE  shift 6
-	IDENT  shift 18
+	NEWLINE  shift 17
+	L_BRACE  shift 7
+	IDENT  shift 20
 	.  error
 
-	object  goto 17
-	value  goto 16
-
-state 13
-	object:  L_BRACE NEWLINE members R_BRACE.    (4)
-
-	.  reduce 4 (src line 86)
-
-
-state 14
-	members:  members pair.    (6)
-
-	.  reduce 6 (src line 96)
-
+	object  goto 19
+	value  goto 18
 
 state 15
-	pair:  IDENT NEWLINE.    (7)
+	object:  L_BRACE NEWLINE members R_BRACE.    (5)
 
-	.  reduce 7 (src line 101)
+	.  reduce 5 (src line 86)
 
 
 state 16
-	pair:  IDENT value.NEWLINE 
+	members:  members pair.    (7)
 
-	NEWLINE  shift 19
-	.  error
+	.  reduce 7 (src line 96)
 
 
 state 17
-	pair:  IDENT object.NEWLINE 
+	pair:  IDENT NEWLINE.    (8)
 
-	NEWLINE  shift 20
-	.  error
+	.  reduce 8 (src line 101)
 
 
 state 18
-	value:  IDENT.value 
-	value:  IDENT.    (11)
+	pair:  IDENT value.NEWLINE 
 
-	IDENT  shift 18
-	.  reduce 11 (src line 121)
+	NEWLINE  shift 21
+	.  error
 
-	value  goto 21
 
 state 19
-	pair:  IDENT value NEWLINE.    (8)
+	pair:  IDENT object.NEWLINE 
 
-	.  reduce 8 (src line 106)
+	NEWLINE  shift 22
+	.  error
 
 
 state 20
-	pair:  IDENT object NEWLINE.    (9)
+	value:  IDENT.value 
+	value:  IDENT.    (12)
 
-	.  reduce 9 (src line 110)
+	IDENT  shift 20
+	.  reduce 12 (src line 121)
 
+	value  goto 23
 
 state 21
-	value:  IDENT value.    (10)
+	pair:  IDENT value NEWLINE.    (9)
 
-	.  reduce 10 (src line 115)
+	.  reduce 9 (src line 106)
+
+
+state 22
+	pair:  IDENT object NEWLINE.    (10)
+
+	.  reduce 10 (src line 110)
+
+
+state 23
+	value:  IDENT value.    (11)
+
+	.  reduce 11 (src line 115)
 
 
 11 terminals, 6 nonterminals
-12 grammar rules, 22/8000 states
+13 grammar rules, 24/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 55 working sets used
-memory: parser 8/120000
+memory: parser 9/120000
 6 extra closures
-16 shift entries, 1 exceptions
-8 goto entries
+18 shift entries, 1 exceptions
+9 goto entries
 0 entries saved by goto default
-Optimizer space used: output 24/120000
-24 table entries, 0 zero
-maximum spread: 11, maximum offset: 18
+Optimizer space used: output 27/120000
+27 table entries, 0 zero
+maximum spread: 11, maximum offset: 20
