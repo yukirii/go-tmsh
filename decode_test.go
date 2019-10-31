@@ -344,6 +344,7 @@ func TestUnmarshalClientSSLProfile(t *testing.T) {
     defaults-from /Common/clientssl_v2
     inherit-certkeychain false
     key wildcard.example.com_20191031-1.key
+    options { dont-insert-empty-fragments }
     passphrase "****"
 }`
 

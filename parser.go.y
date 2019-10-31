@@ -87,6 +87,11 @@ object
 	{
 		$$ = &node{kind: structNode, value: "", children: $3}
 	}
+	| L_BRACE value R_BRACE
+	{
+		n := &node{kind: scalarNode, value: "", children: []*node{$2}}
+		$$ = &node{ kind: structNode, value: "", children: []*node{n}}
+	}
 
 members
 	: pair
