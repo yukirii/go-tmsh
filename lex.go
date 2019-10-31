@@ -22,7 +22,7 @@ func isLetter(ch rune) bool {
 	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
 		ch == '.' || ch == ',' || ch == '_' || ch == '-' || ch == ':' || ch == ';' ||
 		ch == '/' || ch == '\'' || ch == '(' || ch == ')' || ch == '@' ||
-		ch == '"' || ch == '*'
+		ch == '"' || ch == '*' || ch == '!'
 }
 
 func isDigit(ch rune) bool {
