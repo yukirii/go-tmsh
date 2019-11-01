@@ -8,17 +8,13 @@ import (
 
 // VirtualServer contains information about each virtual server
 type VirtualServer struct {
-	Name        string             `ltm:"name"`
-	Destination string             `ltm:"destination"`
-	IpProtocol  string             `ltm:"ip-protocol"`
-	Mask        string             `ltm:"mask"`
-	Partition   string             `ltm:"partition"`
-	Pool        string             `ltm:"pool"`
-	Profiles    map[string]Profile `ltm:"profiles"`
-}
-
-type Profile struct {
-	Context string `ltm:"context"`
+	Name        string                       `ltm:"name"`
+	Destination string                       `ltm:"destination"`
+	IpProtocol  string                       `ltm:"ip-protocol"`
+	Mask        string                       `ltm:"mask"`
+	Partition   string                       `ltm:"partition"`
+	Pool        string                       `ltm:"pool"`
+	Profiles    map[string]map[string]string `ltm:"profiles"`
 }
 
 // GetAllVirtualServers returns a list of all virtual servers

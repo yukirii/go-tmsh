@@ -28,7 +28,7 @@ func Unmarshal(data string, out interface{}) error {
 
 func unmarshal(n *node, out reflect.Value) {
 	switch n.kind {
-	case ltmNodeNode, ltmPoolNode, ltmVirtualNode:
+	case ltmNode:
 		// Store LTM components info into embedded struct
 		for i := 0; i < out.NumField(); i++ {
 			fieldValue := out.Field(i)
@@ -44,6 +44,13 @@ func unmarshal(n *node, out reflect.Value) {
 		if f, ok := lookupField("name", out); ok {
 			if f.Kind() == reflect.String && f.String() == "" {
 				f.SetString(n.value)
+			}
+		}
+
+		// Set component field
+		if f, ok := lookupField("component", out); ok {
+			if f.Kind() == reflect.String && f.String() == "" {
+				f.SetString(n.component)
 			}
 		}
 	case structNode:
