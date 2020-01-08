@@ -159,7 +159,9 @@ func (conn *sshConn) Recv(suffix string) ([]byte, error) {
 			return nil, err
 		}
 		result.Write(buff[:n])
-		if err == io.EOF || bytes.HasSuffix(buff[:n], []byte(suffix)) {
+		// Sometime the tmsh prompt can return extra ' ' after the suffix
+		buff_fields := bytes.Fields(buff[:n])
+		if err == io.EOF || bytes.HasSuffix(append(buff_fields[len(buff_fields)-1], ' '), []byte(suffix)) {
 			break
 		}
 	}
@@ -169,7 +171,7 @@ func (conn *sshConn) Recv(suffix string) ([]byte, error) {
 func (conn *sshConn) Close() error {
 	err := conn.client.Close()
 	if err != nil {
-		return err
+		return err 
 	}
 	return conn.session.Close()
 }
